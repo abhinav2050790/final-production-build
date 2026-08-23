@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getPublicSpec } from "@/lib/db";
 import type { SpecDocument } from "@/lib/types";
 import ShareProductView from "@/components/ShareProductView";
+import SharePdfButton from "@/components/SharePdfButton";
 import DataQualityTab from "@/components/DataQualityTab";
 
 interface Props {
@@ -60,9 +61,12 @@ export default async function SharePage({ params }: Props) {
             {spec.model ? ` · ${spec.model}` : ""}
           </p>
         </div>
-        <span className="rounded-full border border-line-strong bg-white/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-fog-dim">
-          read-only view
-        </span>
+        <div className="flex flex-col items-end gap-3">
+          <SharePdfButton spec={spec} />
+          <span className="rounded-full border border-line-strong bg-white/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-fog-dim">
+            read-only view
+          </span>
+        </div>
       </header>
 
       <div className="space-y-10">
