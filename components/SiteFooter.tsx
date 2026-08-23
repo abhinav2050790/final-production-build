@@ -19,7 +19,7 @@ export default function SiteFooter() {
             <Link
               key={l.href}
               href={l.href}
-              className="font-mono text-[11px] uppercase tracking-[0.3em] text-fog-faint transition hover:text-white"
+              className="font-mono text-[11px] uppercase tracking-[0.3em] text-fog-faint transition hover:text-black"
             >
               {l.label}
             </Link>

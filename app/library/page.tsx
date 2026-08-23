@@ -55,11 +55,11 @@ export default function LibraryPage() {
         <div>
           <Link
             href="/"
-            className="font-mono text-[11px] uppercase tracking-[0.3em] text-fog-faint transition hover:text-white"
+            className="font-mono text-[11px] uppercase tracking-[0.3em] text-fog-faint transition hover:text-black"
           >
             ← nexsus.spec
           </Link>
-          <h1 className="mt-2 font-mono text-2xl font-bold uppercase tracking-widest text-white">
+          <h1 className="mt-2 font-mono text-2xl font-bold uppercase tracking-widest text-black">
             my library
           </h1>
           <p className="mt-1.5 text-xs text-fog-dim">
@@ -69,7 +69,7 @@ export default function LibraryPage() {
         <button
           type="button"
           onClick={load}
-          className="rounded-lg border border-line-strong bg-white/5 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-white hover:text-white"
+          className="rounded-lg border border-line-strong bg-black/[0.04] px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-black hover:text-black"
         >
           ↻ refresh
         </button>
@@ -114,7 +114,7 @@ export default function LibraryPage() {
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/s/${it.slug}`}
-                  className="block truncate text-sm font-semibold text-white transition hover:text-accent"
+                  className="block truncate text-sm font-semibold text-black transition hover:text-accent"
                 >
                   {it.title}
                 </Link>
@@ -126,7 +126,7 @@ export default function LibraryPage() {
               <button
                 type="button"
                 onClick={() => void copyShare(it.slug)}
-                className="rounded-lg border border-line-strong bg-white/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-fog-dim transition hover:border-white hover:text-white"
+                className="rounded-lg border border-line-strong bg-black/[0.04] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-fog-dim transition hover:border-black hover:text-black"
               >
                 {copied === it.slug ? "✓ copied" : "share"}
               </button>

@@ -206,7 +206,7 @@ export default function InputPanel({
               mode === "ai"
                 ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
                 : forcedDemo
-                  ? "border-line-strong bg-white/5 text-fog-dim"
+                  ? "border-line-strong bg-black/[0.04] text-fog-dim"
                   : "border-amber-400/40 bg-amber-400/10 text-amber-300"
             }`}
           >
@@ -221,7 +221,7 @@ export default function InputPanel({
 
       <p className="-mt-2 text-[10.5px] text-fog-faint">
         Live AI processes your input in real time. Press{" "}
-        <kbd className="rounded border border-white/15 bg-white/5 px-1 py-0.5 font-mono text-[9.5px] text-fog">
+        <kbd className="rounded border border-black/15 bg-black/[0.04] px-1 py-0.5 font-mono text-[9.5px] text-fog">
           Shift+D
         </kbd>{" "}
         anytime to force the deterministic offline engine instead.
@@ -236,8 +236,8 @@ export default function InputPanel({
             disabled={busy}
             className={`rounded-lg border px-2.5 py-1.5 text-xs transition ${
               activeSample === s.id
-                ? "border-white bg-white text-black"
-                : "border-line-strong bg-white/5 text-fog-dim hover:border-white hover:text-white"
+                ? "border-black bg-black text-white"
+                : "border-line-strong bg-black/[0.04] text-fog-dim hover:border-black hover:text-black"
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {s.icon} {s.label}
@@ -250,7 +250,7 @@ export default function InputPanel({
         onChange={(e) => setTitle(e.target.value)}
         disabled={busy}
         placeholder="Spec title (optional)"
-        className="w-full rounded-lg border border-line-strong bg-black/30 px-3 py-2 text-sm text-fog placeholder-fog-faint outline-none transition focus:border-white focus:ring-1 focus:ring-white/40 disabled:opacity-60"
+        className="w-full rounded-lg border border-line-strong bg-white px-3 py-2 text-sm text-fog placeholder-fog-faint outline-none transition focus:border-black focus:ring-1 focus:ring-black/40 disabled:opacity-60"
       />
 
       <div
@@ -279,14 +279,14 @@ export default function InputPanel({
           placeholder={
             "Paste anything raw here…\n\n• a product spec sheet\n• a datasheet extract\n• catalog rows from a PDF\n• or drop one or many PDFs on this box\n\nThe forge will organize every product and attribute."
           }
-          className={`scrollbar-thin h-64 w-full resize-y rounded-lg border bg-black/30 p-3 text-[13px] leading-relaxed text-fog placeholder-fog-faint outline-none transition focus:border-white focus:ring-1 focus:ring-white/40 disabled:opacity-60 ${
+          className={`scrollbar-thin h-64 w-full resize-y rounded-lg border bg-white p-3 text-[13px] leading-relaxed text-fog placeholder-fog-faint outline-none transition focus:border-black focus:ring-1 focus:ring-black/40 disabled:opacity-60 ${
             dragOver
-              ? "border-white ring-2 ring-white/40"
+              ? "border-black ring-2 ring-black/40"
               : "border-line-strong"
           }`}
         />
         {dragOver && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-white/10 text-sm font-semibold text-white">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-black/10 text-sm font-semibold text-black">
             ⬇ Drop PDFs / TXT files to ingest
           </div>
         )}
@@ -316,7 +316,7 @@ export default function InputPanel({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={busy}
-            className="rounded-lg border border-white bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-[0_0_18px_rgba(255,255,255,0.25)] transition hover:bg-fog disabled:opacity-40"
+            className="rounded-lg border border-black bg-black px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:bg-[#333333] disabled:opacity-40"
           >
             {uploading ? "⏳ extracting…" : "📎 ADD PDF / TEXT"}
           </button>
@@ -330,7 +330,7 @@ export default function InputPanel({
               setUploadError(null);
             }}
             disabled={busy || (!text && !title)}
-            className="text-fog-faint underline-offset-2 transition hover:text-white hover:underline disabled:opacity-40"
+            className="text-fog-faint underline-offset-2 transition hover:text-black hover:underline disabled:opacity-40"
           >
             clear
           </button>
@@ -345,13 +345,13 @@ export default function InputPanel({
           onKeyDown={(e) => e.key === "Enter" && void fetchPage()}
           disabled={busy}
           placeholder="…or paste a product-page URL and pull its text"
-          className="min-w-0 flex-1 rounded-lg border border-line bg-black/30 px-3 py-2 font-mono text-[12px] text-fog placeholder-fog-faint outline-none transition focus:border-white disabled:opacity-60"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 font-mono text-[12px] text-fog placeholder-fog-faint outline-none transition focus:border-black disabled:opacity-60"
         />
         <button
           type="button"
           onClick={() => void fetchPage()}
           disabled={busy || fetchingPage || !pageUrl.trim()}
-          className="shrink-0 rounded-lg border border-line-strong bg-white/5 px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-fog-dim transition hover:border-white hover:text-white disabled:opacity-40"
+          className="shrink-0 rounded-lg border border-line-strong bg-black/[0.04] px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-fog-dim transition hover:border-black hover:text-black disabled:opacity-40"
         >
           {fetchingPage ? "fetching…" : "fetch ↧"}
         </button>
@@ -375,18 +375,18 @@ export default function InputPanel({
         onClick={() => onRun(text, title)}
         className={`group relative w-full overflow-hidden rounded-xl px-4 py-3.5 text-sm font-semibold transition ${
           busy || !ready
-            ? "cursor-not-allowed bg-white/5 text-fog-faint"
-            : "bg-white text-black hover:bg-fog"
+            ? "cursor-not-allowed bg-black/[0.04] text-fog-faint"
+            : "bg-black text-white hover:bg-[#333333]"
         }`}
       >
         {running ? (
           <span className="flex items-center justify-center gap-2.5">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />
             {activeStageLabel ? `Forging — ${activeStageLabel}…` : "Starting forge…"}
           </span>
         ) : uploading ? (
           <span className="flex items-center justify-center gap-2.5">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />
             Extracting PDF text…
           </span>
         ) : (

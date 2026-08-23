@@ -102,7 +102,7 @@ export default function ProductsTab({ spec, onSelect }: Props) {
         {stats.map((s, i) => (
           <div
             key={s.label}
-            className="animate-fade-up rounded-xl border border-white/8 bg-white/[0.03] p-3.5 text-center"
+            className="animate-fade-up rounded-xl border border-black/8 bg-black/[0.03] p-3.5 text-center"
             style={{ animationDelay: `${i * 60}ms` }}
           >
             <p className="text-2xl font-bold text-fog">{s.n}</p>
@@ -120,7 +120,7 @@ export default function ProductsTab({ spec, onSelect }: Props) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, attributes (voltage, range…), part numbers…"
-            className="w-full rounded-lg border border-line bg-black/30 py-2 pl-9 pr-3 text-sm text-fog placeholder-fog-faint outline-none transition focus:border-white focus:ring-1 focus:ring-white/40"
+            className="w-full rounded-lg border border-line bg-black/30 py-2 pl-9 pr-3 text-sm text-fog placeholder-fog-faint outline-none transition focus:border-black focus:ring-1 focus:ring-black/40"
           />
         </div>
         <select
@@ -130,7 +130,7 @@ export default function ProductsTab({ spec, onSelect }: Props) {
           aria-label="Sort products"
         >
           {SORT_OPTIONS.map((o) => (
-            <option key={o.id} value={o.id} className="bg-[#111111]">
+            <option key={o.id} value={o.id} className="bg-panel">
               Sort: {o.label}
             </option>
           ))}
@@ -145,8 +145,8 @@ export default function ProductsTab({ spec, onSelect }: Props) {
             onClick={() => setBrandFilter("all")}
             className={`rounded-full border px-3 py-1.5 text-xs transition ${
               brandFilter === "all"
-                ? "border-violet-400/60 bg-violet-500/15 text-white"
-                : "border-line bg-white/5 text-fog hover:border-white/30"
+                ? "border-violet-400/60 bg-violet-500/15 text-black"
+                : "border-line bg-black/[0.04] text-fog hover:border-black/30"
             }`}
           >
             All <span className="text-fog-faint">{products.length}</span>
@@ -158,8 +158,8 @@ export default function ProductsTab({ spec, onSelect }: Props) {
               onClick={() => setBrandFilter(b)}
               className={`rounded-full border px-3 py-1.5 text-xs transition ${
                 brandFilter === b
-                  ? "border-violet-400/60 bg-violet-500/15 text-white"
-                  : "border-line bg-white/5 text-fog hover:border-white/30"
+                  ? "border-violet-400/60 bg-violet-500/15 text-black"
+                : "border-line bg-black/[0.04] text-fog hover:border-black/30"
               }`}
             >
               {b} <span className="text-fog-faint">{n}</span>
@@ -185,7 +185,7 @@ export default function ProductsTab({ spec, onSelect }: Props) {
             className="glass animate-fade-up group rounded-2xl p-4 text-left transition duration-200 hover:-translate-y-0.5 hover:border-line-strong"
           >
             <div className="flex items-start justify-between gap-2">
-              <h3 className="text-[14px] font-semibold leading-snug text-fog group-hover:text-white">
+              <h3 className="text-[14px] font-semibold leading-snug text-fog group-hover:text-black">
                 {p.name}
               </h3>
               <span className="shrink-0 text-[10px] text-fog-faint">#{i + 1}</span>
@@ -204,7 +204,7 @@ export default function ProductsTab({ spec, onSelect }: Props) {
                   </span>
                 )}
                 {p.partNumber && (
-                  <span className="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-fog">
+                  <span className="rounded-md border border-black/15 bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-fog">
                     {p.partNumber}
                   </span>
                 )}
@@ -216,7 +216,7 @@ export default function ProductsTab({ spec, onSelect }: Props) {
             )}
 
             {p.attributes.length > 0 && (
-              <ul className="mt-2.5 space-y-1 border-t border-white/5 pt-2.5">
+              <ul className="mt-2.5 space-y-1 border-t border-black/5 pt-2.5">
                 {p.attributes.slice(0, 5).map((a) => (
                   <li key={a.name} className="flex items-baseline justify-between gap-3 text-[12px] leading-snug">
                     <span className="text-fog-faint">{a.name}</span>

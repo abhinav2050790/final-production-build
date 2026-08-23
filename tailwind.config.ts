@@ -9,22 +9,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Nothing-inspired monochrome system ────────────────────────────
-        ink: "#000000", // OLED black canvas
-        panel: "#111111", // elevated surface
-        raised: "#1a1a1a", // second elevation
+        // ── Nothing-inspired monochrome system — LIGHT EDITION ─────────────
+        ink: "#ffffff", // white canvas
+        panel: "#f7f7f7", // elevated surface
+        raised: "#efefef", // second elevation
         line: {
-          DEFAULT: "#222222", // decorative hairline
-          strong: "#333333", // intentional wireframe border
+          DEFAULT: "#e4e4e4", // decorative hairline
+          strong: "#999999", // intentional wireframe border
         },
         fog: {
-          DEFAULT: "#e8e8e8", // primary text
-          dim: "#999999", // labels, captions
-          faint: "#666666", // disabled, decorative
+          DEFAULT: "#111111", // primary text
+          dim: "#555555", // labels, captions
+          faint: "#9a9a9a", // disabled, decorative
         },
         accent: {
           DEFAULT: "#d71921", // Nothing red — signal only, never decoration
-          subtle: "rgba(215, 25, 33, 0.15)",
+          subtle: "rgba(215, 25, 33, 0.10)",
         },
         success: "#22C55E", // emerald — positive status only
       },

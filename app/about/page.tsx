@@ -31,7 +31,7 @@ export default function AboutPage() {
           boring and full of typos.
         </p>
         <p>
-          <span className="text-white">Nexsus.Spec</span> reads those documents
+          <span className="text-black">Nexsus.Spec</span> reads those documents
           for you. Drop a PDF in, get every product out as a clean page: each
           attribute with its value, key features, use cases — searchable,
           filterable and ready to export.
@@ -41,9 +41,9 @@ export default function AboutPage() {
       <Section index="02" title="how it works">
         <div className="grid gap-2 sm:grid-cols-5">
           {STAGES.map((s) => (
-            <div key={s.id} className="rounded-xl border border-line bg-white/[0.02] p-4">
+            <div key={s.id} className="rounded-xl border border-line bg-black/[0.03] p-4">
               <span className="text-xl">{s.icon}</span>
-              <h3 className="mt-2 font-mono text-[10px] uppercase tracking-widest text-white">
+              <h3 className="mt-2 font-mono text-[10px] uppercase tracking-widest text-black">
                 {s.name}
               </h3>
             </div>
@@ -58,15 +58,15 @@ export default function AboutPage() {
 
       <Section index="03" title="the team">
         <p>
-          Built by <span className="text-white">Team Nexsus</span> — we believe
+          Built by <span className="text-black">Team Nexsus</span> — we believe
           product data should move at the speed of the products it describes.
           Nothing OS inspired the interface: quiet surfaces, dot-matrix texture,
           one red signal when something matters.
         </p>
         <div className="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-4">
           {FACTS.map((f) => (
-            <div key={f.l} className="rounded-xl border border-line bg-white/[0.02] px-4 py-3">
-              <p className="font-mono text-xl font-bold text-white">{f.n}</p>
+            <div key={f.l} className="rounded-xl border border-line bg-black/[0.03] px-4 py-3">
+              <p className="font-mono text-xl font-bold text-black">{f.n}</p>
               <p className="mt-0.5 text-[10.5px] text-fog-faint">{f.l}</p>
             </div>
           ))}

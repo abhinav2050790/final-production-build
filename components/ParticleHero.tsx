@@ -86,7 +86,7 @@ export default function ParticleHero() {
           const d2 = dx * dx + dy * dy;
           if (d2 > LINK_DIST * LINK_DIST) continue;
           const alpha = (1 - Math.sqrt(d2) / LINK_DIST) * 0.14;
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+          ctx.strokeStyle = `rgba(17, 17, 17, ${alpha})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
@@ -100,9 +100,9 @@ export default function ParticleHero() {
         const near = Math.hypot(m.x - p.x, m.y - p.y) < 140;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r * (near ? 1.6 : 1), 0, Math.PI * 2);
-        // mostly white dot-matrix dust, the occasional Nothing-red signal dot
+        // mostly black dot-matrix dust, the occasional Nothing-red signal dot
         ctx.fillStyle =
-          p.hue > 0.92 ? "rgba(215, 25, 33, 0.9)" : `rgba(255, 255, 255, ${0.35 + p.hue * 0.45})`;
+          p.hue > 0.92 ? "rgba(215, 25, 33, 0.9)" : `rgba(17, 17, 17, ${0.35 + p.hue * 0.45})`;
         ctx.fill();
       }
 

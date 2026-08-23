@@ -51,8 +51,8 @@ export default function CompareTab({ spec }: { spec: SpecDocument }) {
               onClick={() => toggle(p.id)}
               className={`max-w-full truncate rounded-lg border px-3 py-1.5 text-xs transition ${
                 picks.includes(p.id)
-                  ? "border-white bg-white text-black"
-                  : "border-line-strong bg-white/5 text-fog-dim hover:border-white hover:text-white"
+                  ? "border-black bg-black text-white"
+                  : "border-line-strong bg-black/[0.04] text-fog-dim hover:border-black hover:text-black"
               }`}
             >
               {p.name}
@@ -72,12 +72,12 @@ export default function CompareTab({ spec }: { spec: SpecDocument }) {
           <table className="w-full border-collapse text-left">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-[#111111] px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-fog-faint">
+                <th className="sticky left-0 z-10 bg-panel px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-fog-faint">
                   attribute
                 </th>
                 {chosen.map((p) => (
                   <th key={p.id} className="min-w-[160px] px-4 py-3 align-bottom">
-                    <span className="block text-sm font-semibold leading-snug text-white">
+                    <span className="block text-sm font-semibold leading-snug text-black">
                       {p.name}
                     </span>
                     {p.brand && (
@@ -100,7 +100,7 @@ export default function CompareTab({ spec }: { spec: SpecDocument }) {
                   <tr
                     key={name}
                     style={{ animationDelay: `${Math.min(ri * 30, 400)}ms` }}
-                    className={`animate-fade-up ${ri % 2 === 0 ? "bg-white/[0.02]" : ""}`}
+                    className={`animate-fade-up ${ri % 2 === 0 ? "bg-black/[0.03]" : ""}`}
                   >
                     <td className="whitespace-nowrap px-4 py-2.5 font-mono text-[10.5px] uppercase tracking-wider text-fog-faint">
                       {name}
@@ -117,7 +117,7 @@ export default function CompareTab({ spec }: { spec: SpecDocument }) {
                         }`}
                         style={
                           v !== null && differs
-                            ? { color: "#fff", boxShadow: `inset 2px 0 0 ${ACCENT}` }
+                            ? { color: "#111111", boxShadow: `inset 2px 0 0 ${ACCENT}` }
                             : undefined
                         }
                       >

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
@@ -14,10 +14,10 @@ body {
   @apply bg-ink text-fog antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* Nothing OS spec: subtle 32×32px hairline grid overlay */
+  /* Nothing OS spec: subtle 32Ã—32px hairline grid overlay */
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
   background-size: 32px 32px;
   background-attachment: fixed;
 }
@@ -27,32 +27,32 @@ body {
   color: #ffffff;
 }
 
-/* ── Nothing OS 32px hairline grid overlay ────────────────────────────── */
+/* â”€â”€ Nothing OS 32px hairline grid overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .grid-32 {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
-/* ── Surfaces — flat panels, wireframe borders. No glass, no blur. ────── */
+/* â”€â”€ Surfaces â€” flat panels, wireframe borders. No glass, no blur. â”€â”€â”€â”€â”€â”€ */
 
 .glass {
-  background: #111111;
-  border: 1px solid #222222;
+  background: #f7f7f7;
+  border: 1px solid #e4e4e4;
 }
 
 .glass-strong {
-  background: #111111;
-  border: 1px solid #2e2e2e;
+  background: #ffffff;
+  border: 1px solid #d4d4d4;
 }
 
 .gradient-text {
-  color: #ffffff;
+  color: #111111;
 }
 
-/* ── 3D pipeline scene ────────────────────────────────────────────────── */
+/* â”€â”€ 3D pipeline scene â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .scene {
   perspective: 1300px;
@@ -192,7 +192,7 @@ body {
   50% { transform: translateY(-7px); }
 }
 
-/* ── Generic animations ───────────────────────────────────────────────── */
+/* â”€â”€ Generic animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -232,7 +232,7 @@ body {
   animation: pulseRing 1.6s ease-out infinite;
 }
 
-/* ── Legendary scene effects ──────────────────────────────────────────── */
+/* â”€â”€ Legendary scene effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /* Dot-matrix floor the pipeline sits on */
 .matrix-floor {
@@ -332,7 +332,7 @@ body {
   50% { opacity: 1; }
 }
 
-/* Idle attract-mode traffic — the line never sleeps */
+/* Idle attract-mode traffic â€” the line never sleeps */
 .packet-ghost {
   width: 4px;
   height: 4px;
@@ -425,7 +425,7 @@ body {
 .corner.br { bottom: 8px; right: 8px; border-bottom-width: 1px; border-right-width: 1px; }
 
 .blink-cursor::after {
-  content: "▮";
+  content: "â–®";
   margin-left: 2px;
   animation: blinkCursor 1.1s steps(2) infinite;
 }
@@ -434,14 +434,14 @@ body {
   50% { opacity: 0; }
 }
 
-/* ── Room intro ───────────────────────────────────────────────────────── */
+/* â”€â”€ Room intro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 @keyframes rgbBreathe {
   0%, 100% { opacity: 0.75; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.06); }
 }
 
-/* ── Scrollbars ───────────────────────────────────────────────────────── */
+/* â”€â”€ Scrollbars â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
@@ -451,7 +451,7 @@ body {
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #444444; }
 
-/* ── Reduced motion ───────────────────────────────────────────────────── */
+/* â”€â”€ Reduced motion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
