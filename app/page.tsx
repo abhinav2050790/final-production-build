@@ -15,6 +15,7 @@ import ExportTab from "@/components/ExportTab";
 import AuditDrawer from "@/components/AuditDrawer";
 import AuthBadge from "@/components/AuthBadge";
 import ChatPanel from "@/components/ChatPanel";
+import RoomIntro from "@/components/RoomIntro";
 import CompareTab from "@/components/CompareTab";
 import {
   AuditRun,
@@ -50,6 +51,10 @@ export default function Home() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<HTMLDivElement>(null);
   const lastInputRef = useRef<{ text: string; title: string } | null>(null);
+
+  // ── Cinematic room intro ───────────────────────────────────────────────
+  const [introGone, setIntroGone] = useState(true);
+  useEffect(() => setIntroGone(false), []);
 
   // ── Cloud library ──────────────────────────────────────────────────────
   const [saving, setSaving] = useState(false);
@@ -302,6 +307,8 @@ export default function Home() {
 
   return (
     <main className="relative">
+      {!introGone && <RoomIntro onDone={() => setIntroGone(true)} />}
+
       {/* ── Google account badge ──────────────────────────────────────────── */}
       <div className="pointer-events-none absolute right-4 top-4 z-40 flex flex-col items-end gap-2 sm:right-6 sm:top-6">
         <AuthBadge />

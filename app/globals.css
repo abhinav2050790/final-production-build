@@ -423,6 +423,13 @@ body {
   50% { opacity: 0; }
 }
 
+/* ── Room intro ───────────────────────────────────────────────────────── */
+
+@keyframes rgbBreathe {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
 /* ── Scrollbars ───────────────────────────────────────────────────────── */
 
 .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
