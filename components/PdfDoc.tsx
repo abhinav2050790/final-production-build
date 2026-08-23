@@ -125,7 +125,7 @@ function fmtDate(iso: string): string {
 }
 
 export function SpecPdfDocument({ spec }: { spec: SpecDocument }) {
-  const q = spec.quality;
+  const q = spec.quality ?? { score: 0, findings: [], attributeCount: 0, withPartNumbers: 0 };
   return (
     <Document
       title={spec.title}
