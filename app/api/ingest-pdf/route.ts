@@ -3,6 +3,7 @@
 // Layer 2: pdfjs-dist v3 (Mozilla PDF.js, handles damaged/missing XRef tables)
 // Both run in-process — no web workers, no "fake worker" errors.
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 export const runtime = "nodejs";
@@ -12,14 +13,15 @@ const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_TEXT = 16000; // mirrors the pipeline's ingest cap
 
 // ── pdfjs-dist v3 fallback ───────────────────────────────────────────────────
-// Runs entirely in the main thread using the LoopbackPort fake-worker pattern.
-// Handles damaged/missing XRef tables that throw pdf-parse's legacy pdf.js.
+// eval("require") bypasses webpack bundling — same trick pdfjs-dist uses
+// internally for Node.js fake-worker detection.
 async function parseWithPdfjs(buffer: Buffer): Promise<{ text: string; pages: number }> {
-  // Provide the WorkerMessageHandler so pdfjs-dist skips real worker creation
-  const workerModule = require("pdfjs-dist/build/pdf.worker.js");
-  globalThis.pdfjsWorker = { WorkerMessageHandler: workerModule.WorkerMessageHandler };
+  // @ts-ignore dynamic require hidden from bundler
+  const pdfjsLib = eval("require")("pdfjs-dist/build/pdf.js");
+  // @ts-ignore
+  const workerMod = eval("require")("pdfjs-dist/build/pdf.worker.js");
+  (globalThis as any).pdfjsWorker = { WorkerMessageHandler: workerMod.WorkerMessageHandler };
 
-  const pdfjsLib = require("pdfjs-dist/build/pdf.js");
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
   const doc = await loadingTask.promise;
 
