@@ -54,12 +54,12 @@ export default function ContactPage() {
       <Section index="01" title="channels">
         <div className="grid gap-2 sm:grid-cols-3">
           {CHANNELS.map((c) => (
-            <div key={c.title} className="rounded-xl border border-line bg-black/[0.03] p-4">
+            <div key={c.title} className="rounded-xl border border-line bg-white/[0.02] p-4">
               <span className="text-lg text-fog-dim">{c.icon}</span>
               <h3 className="mt-2 font-mono text-[10px] uppercase tracking-[0.25em] text-fog-faint">
                 {c.title}
               </h3>
-              <p className="mt-1 text-sm font-medium text-black">{c.line}</p>
+              <p className="mt-1 text-sm font-medium text-white">{c.line}</p>
               <p className="mt-1 text-[11px] leading-relaxed text-fog-faint">{c.note}</p>
             </div>
           ))}
@@ -82,7 +82,7 @@ export default function ContactPage() {
                 setSent(false);
                 setMessage("");
               }}
-              className="mt-4 rounded-lg border border-line-strong bg-black/[0.04] px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-black hover:text-black"
+              className="mt-4 rounded-lg border border-line-strong bg-white/5 px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-white hover:text-white"
             >
               write another
             </button>
@@ -100,7 +100,7 @@ export default function ContactPage() {
                   required
                   minLength={2}
                   placeholder="Ada Lovelace"
-                  className="mt-1.5 w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 py-3 text-sm text-black placeholder:text-fog-faint focus:border-black focus:outline-none"
+                  className="mt-1.5 w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-fog-faint focus:border-white focus:outline-none"
                 />
               </label>
               <label className="block">
@@ -113,7 +113,7 @@ export default function ContactPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="ada@analytical.engine"
-                  className="mt-1.5 w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 py-3 text-sm text-black placeholder:text-fog-faint focus:border-black focus:outline-none"
+                  className="mt-1.5 w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-fog-faint focus:border-white focus:outline-none"
                 />
               </label>
             </div>
@@ -128,7 +128,7 @@ export default function ContactPage() {
                 minLength={6}
                 rows={5}
                 placeholder="Tell us what you're extracting, or what went sideways…"
-                className="mt-1.5 w-full resize-none rounded-xl border border-line-strong bg-black/[0.03] px-4 py-3 text-sm leading-relaxed text-black placeholder:text-fog-faint focus:border-black focus:outline-none"
+                className="mt-1.5 w-full resize-none rounded-xl border border-line-strong bg-white/[0.03] px-4 py-3 text-sm leading-relaxed text-white placeholder:text-fog-faint focus:border-white focus:outline-none"
               />
             </label>
             <div className="flex items-center justify-between gap-4 pt-1">
@@ -138,8 +138,8 @@ export default function ContactPage() {
                 disabled={!valid}
                 className={`rounded-xl px-6 py-3 text-sm font-semibold transition ${
                   valid
-                    ? "bg-black text-white hover:bg-[#333333]"
-                    : "pointer-events-none border border-transparent bg-black/10 text-fog-faint"
+                    ? "bg-white text-black hover:bg-fog"
+                    : "pointer-events-none border border-transparent bg-white/10 text-fog-faint"
                 }`}
               >
                 send message ⏎

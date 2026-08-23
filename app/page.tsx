@@ -299,8 +299,8 @@ export default function Home() {
       onClick={() => setTab(id)}
       className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
         tab === id
-          ? "border border-black bg-black text-white"
-          : "border border-transparent text-fog-dim hover:text-black"
+          ? "border border-white bg-white text-black"
+          : "border border-transparent text-fog-dim hover:text-white"
       }`}
     >
       {icon} {label}
@@ -316,7 +316,7 @@ export default function Home() {
         <AuthBadge />
         <Link
           href="/library"
-          className="pointer-events-auto rounded-lg border border-line-strong bg-black/[0.04] px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-black hover:text-black"
+          className="pointer-events-auto rounded-lg border border-line-strong bg-white/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-white hover:text-white"
         >
           📚 my library
         </Link>
@@ -333,10 +333,10 @@ export default function Home() {
           }}
         />
         <div className="animate-fade-up-slow relative z-10 max-w-4xl">
-          <h1 className="text-[10vw] font-bold uppercase leading-none tracking-widest text-black sm:text-[6.5rem]">
+          <h1 className="text-[10vw] font-bold uppercase leading-none tracking-widest text-white sm:text-[6.5rem]">
             Nexsus.Spec
           </h1>
-          <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-line-strong bg-black/[0.04] px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-fog-dim">
+          <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/5 px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-fog-dim">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
@@ -351,13 +351,13 @@ export default function Home() {
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#studio"
-              className="rounded-xl bg-black px-7 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-[#333333]"
+              className="rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-black shadow-glow transition hover:bg-[#E8E8E8]"
             >
               ⚡ Extract product data
             </a>
             <a
               href="#how"
-              className="rounded-xl border border-line-strong bg-transparent px-7 py-3.5 text-sm font-medium text-fog transition hover:border-black"
+              className="rounded-xl border border-[#333333] bg-transparent px-7 py-3.5 text-sm font-medium text-white transition hover:border-white"
             >
               How it works
             </a>
@@ -369,7 +369,7 @@ export default function Home() {
               { n: "100%", l: "attribute:value data" },
             ].map((s) => (
               <div key={s.l} className="glass rounded-2xl px-4 py-4">
-                <p className="font-mono text-2xl font-bold text-black">{s.n}</p>
+                <p className="font-mono text-2xl font-bold text-white">{s.n}</p>
                 <p className="mt-0.5 text-[11px] text-fog-dim">{s.l}</p>
               </div>
             ))}
@@ -380,7 +380,7 @@ export default function Home() {
 
       {/* ── How it works ─────────────────────────────────────────────────── */}
       <section id="how" className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-black">
+        <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-white">
           The <span className="gradient-text">five-stage</span> forge
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-fog-dim">
@@ -398,7 +398,7 @@ export default function Home() {
                 <span className="text-2xl">{s.icon}</span>
                 <span className="font-mono text-[10px] text-fog-faint">STAGE 0{i + 1}</span>
               </div>
-              <h3 className="mt-3 text-sm font-semibold text-black">{s.name}</h3>
+              <h3 className="mt-3 text-sm font-semibold text-white">{s.name}</h3>
               <p className="mt-1.5 text-[11.5px] leading-relaxed text-fog-dim">{s.tagline}</p>
             </div>
           ))}
@@ -449,7 +449,7 @@ export default function Home() {
           <div className="animate-fade-up glass mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-xl font-bold text-black">{spec.title}</h2>
+                <h2 className="text-xl font-bold text-white">{spec.title}</h2>
                 <span
                   className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ${
                     spec.mode === "ai"
@@ -460,11 +460,11 @@ export default function Home() {
                   {spec.mode === "ai" ? `extracted by live AI · ${spec.model ?? "ai"}` : "fast parser"}
                 </span>
                 {spec.cached && (
-                  <span className="rounded-full border border-line-strong bg-black/[0.04] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-fog-dim">
+                  <span className="rounded-full border border-line-strong bg-white/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-fog-dim">
                     ✔ cached · identical result
                   </span>
                 )}
-                <span className="rounded-full border border-line bg-black/[0.04] px-2.5 py-1 text-[10px] text-fog-dim">
+                <span className="rounded-full border border-line bg-white/5 px-2.5 py-1 text-[10px] text-fog-dim">
                   {spec.products.length} products · {spec.quality.attributeCount} values
                 </span>
               </div>
@@ -482,7 +482,7 @@ export default function Home() {
                     run(lastInputRef.current!.text, lastInputRef.current!.title, true)
                   }
                   disabled={running}
-                  className="rounded-xl border border-line-strong bg-black/[0.04] px-4 py-2 text-sm font-medium text-fog transition hover:border-black hover:text-black disabled:opacity-50"
+                  className="rounded-xl border border-line-strong bg-white/5 px-4 py-2 text-sm font-medium text-fog transition hover:border-white hover:text-white disabled:opacity-50"
                   title="Re-run the AI on this document and save a fresh result"
                 >
                   ↻ Re-extract fresh
@@ -495,7 +495,7 @@ export default function Home() {
                 className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
                   savedSlug
                     ? "border border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
-                    : "border border-line-strong bg-black/[0.04] text-fog hover:border-black hover:text-black"
+                    : "border border-line-strong bg-white/5 text-fog hover:border-white hover:text-white"
                 } disabled:opacity-50`}
                 title="Save this extraction to your cloud library and get a share link"
               >
@@ -505,7 +505,7 @@ export default function Home() {
                 <Link
                   href={`/s/${savedSlug}`}
                   target="_blank"
-                  className="rounded-xl border border-line-strong bg-black/[0.04] px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-fog-dim transition hover:border-black hover:text-black"
+                  className="rounded-xl border border-line-strong bg-white/5 px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-fog-dim transition hover:border-white hover:text-white"
                 >
                   /s/{savedSlug} ↗
                 </Link>
@@ -516,13 +516,13 @@ export default function Home() {
                 disabled={!audit || audit.entries.length === 0}
                 className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
                   audit && audit.entries.length > 0
-                    ? "border border-line-strong bg-black/[0.04] text-fog hover:border-black hover:text-black"
+                    ? "border border-line-strong bg-white/5 text-fog hover:border-white hover:text-white"
                     : "pointer-events-none border border-transparent text-fog-faint"
                 }`}
               >
                 🧾 Audit trail
               </button>
-              <div className="flex gap-1.5 rounded-2xl border border-black/10 bg-black/[0.03] p-1.5">
+              <div className="flex gap-1.5 rounded-2xl border border-white/8 bg-white/[0.03] p-1.5">
                 {tabBtn("products", "Products", "🧱")}
                 {tabBtn("compare", "Compare", "⚖️")}
                 {tabBtn("quality", "Data quality", "🛡️")}
@@ -562,7 +562,7 @@ export default function Home() {
       {toast && (
         <div
           key={toast}
-          className="glass-strong animate-fade-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full border-line-strong px-5 py-2.5 font-mono text-xs font-medium text-black"
+          className="glass-strong animate-fade-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full border-line-strong px-5 py-2.5 font-mono text-xs font-medium text-white"
           role="status"
         >
           {toast}

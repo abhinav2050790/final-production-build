@@ -24,20 +24,20 @@ export default function PrivacyPage() {
     >
       <Section index="01" title="what we process">
         <p>
-          <span className="text-black">Documents you upload</span> — PDFs,
+          <span className="text-white">Documents you upload</span> — PDFs,
           text files and pasted text are read to extract product information.
           Extraction runs through our AI providers (Groq, Google Gemini,
           OpenRouter); whichever answers first does the reading, then the raw
           document is discarded from the working session.
         </p>
         <p>
-          <span className="text-black">Your account</span> — if you sign in
+          <span className="text-white">Your account</span> — if you sign in
           with Google, we store your name, email and profile picture solely to
           attach saved extractions to you. We never post, email or contact
           anyone on your behalf.
         </p>
         <p>
-          <span className="text-black">Saved extractions</span> — pressing
+          <span className="text-white">Saved extractions</span> — pressing
           “Save to library” stores the organized result (not the original
           document) in our database so you can revisit or share it via a link.
           Deleting an entry removes it permanently.
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
           Nexsus.Spec is currently a demo build by Team Nexsus. Policies may
           evolve as the product ships for real; meaningful changes will be
           reflected here before they take effect. Questions? Use the{" "}
-          <a href="/contact" className="text-black underline decoration-line-strong underline-offset-4 hover:decoration-white">
+          <a href="/contact" className="text-white underline decoration-line-strong underline-offset-4 hover:decoration-white">
             contact page
           </a>
           .

@@ -49,7 +49,7 @@ export default function SharePdfButton({ spec }: { spec: SpecDocument }) {
         type="button"
         onClick={() => void download()}
         disabled={busy}
-        className="rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#333333] disabled:opacity-50"
+        className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-fog disabled:opacity-50"
       >
         {busy ? "⏳ rendering…" : "⬇ Download PDF report"}
       </button>

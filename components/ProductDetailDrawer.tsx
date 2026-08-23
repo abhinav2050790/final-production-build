@@ -62,7 +62,7 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
       value={String(p![label] ?? "")}
       maxLength={maxLen}
       onChange={(e) => setDraft((d) => (d ? { ...d, [label]: e.target.value || undefined } : d))}
-      className="w-full rounded-lg border border-line-strong bg-black/30 px-3 py-1.5 text-sm text-fog outline-none focus:border-black"
+      className="w-full rounded-lg border border-line-strong bg-black/30 px-3 py-1.5 text-sm text-fog outline-none focus:border-white"
     />
   );
 
@@ -86,7 +86,7 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                 {editing ? (
                   field("name", 160)
                 ) : (
-                  <h2 className="text-lg font-bold leading-snug text-black">{p.name}</h2>
+                  <h2 className="text-lg font-bold leading-snug text-white">{p.name}</h2>
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   {editing ? (
@@ -97,17 +97,17 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                   ) : (
                     <>
                       {p.brand && (
-                        <span className="rounded-md border border-line-strong bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-fog-dim">
+                        <span className="rounded-md border border-line-strong bg-white/5 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-fog-dim">
                           {p.brand}
                         </span>
                       )}
                       {p.category && (
-                        <span className="rounded-md border border-line-strong bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-fog-dim">
+                        <span className="rounded-md border border-line-strong bg-white/5 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-fog-dim">
                           {p.category}
                         </span>
                       )}
                       {p.partNumber && (
-                        <span className="rounded-md border border-black/15 bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-fog">
+                        <span className="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-fog">
                           Part #{p.partNumber}
                         </span>
                       )}
@@ -125,14 +125,14 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                           setEditing(false);
                           setDraft(null);
                         }}
-                        className="rounded-lg border border-line bg-black/[0.04] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-fog-dim transition hover:text-black"
+                        className="rounded-lg border border-line bg-white/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-fog-dim transition hover:text-white"
                       >
                         cancel
                       </button>
                       <button
                         type="button"
                         onClick={saveEdit}
-                        className="rounded-lg border border-black bg-black px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-white transition hover:bg-[#333333]"
+                        className="rounded-lg border border-white bg-white px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-black transition hover:bg-fog"
                       >
                         save
                       </button>
@@ -142,7 +142,7 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                       type="button"
                       onClick={startEdit}
                       title="Fix this record by hand"
-                      className="rounded-lg border border-line bg-black/[0.04] px-2.5 py-1 text-sm text-fog-dim transition hover:border-black hover:text-black"
+                      className="rounded-lg border border-line bg-white/5 px-2.5 py-1 text-sm text-fog-dim transition hover:border-white hover:text-white"
                     >
                       ✎
                     </button>
@@ -151,7 +151,7 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                   type="button"
                   onClick={onClose}
                   aria-label="Close product details"
-                  className="shrink-0 rounded-lg border border-line bg-black/[0.04] px-2.5 py-1 text-sm text-fog-dim transition hover:border-black/25 hover:text-black"
+                  className="shrink-0 rounded-lg border border-line bg-white/5 px-2.5 py-1 text-sm text-fog-dim transition hover:border-white/25 hover:text-white"
                 >
                   ✕
                 </button>
@@ -186,7 +186,7 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                       <div
                         key={`${a.name}-${i}`}
                         className={`px-4 py-2.5 text-[12.5px] leading-snug ${
-                          i % 2 === 0 ? "bg-black/[0.03]" : "bg-transparent"
+                          i % 2 === 0 ? "bg-white/[0.03]" : "bg-transparent"
                         }`}
                       >
                         <div className="flex items-baseline justify-between gap-4">
@@ -206,7 +206,7 @@ export default function ProductDetailDrawer({ product, onClose, onChange }: Prop
                                     : d
                                 )
                               }
-                              className="w-40 rounded-md border border-line-strong bg-black/30 px-2 py-1 text-right text-[12px] text-fog outline-none focus:border-black"
+                              className="w-40 rounded-md border border-line-strong bg-black/30 px-2 py-1 text-right text-[12px] text-fog outline-none focus:border-white"
                             />
                           ) : (
                             <span className="text-right font-semibold text-fog">{a.value}</span>

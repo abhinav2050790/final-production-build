@@ -57,7 +57,7 @@ export default function ChatPanel({ spec, slug }: Props) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-black bg-black px-5 py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(0,0,0,0.25)] transition hover:bg-[#333333]"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-white bg-white px-5 py-3 text-sm font-semibold text-black shadow-[0_0_24px_rgba(255,255,255,0.25)] transition hover:bg-fog"
       >
         💬 {open ? "Close" : "Ask the specs"}
       </button>
@@ -92,7 +92,7 @@ export default function ChatPanel({ spec, slug }: Props) {
                 key={i}
                 className={
                   t.role === "user"
-                    ? "ml-auto max-w-[85%] rounded-xl bg-black px-3.5 py-2.5 text-[12.5px] leading-relaxed text-white"
+                    ? "ml-auto max-w-[85%] rounded-xl bg-white px-3.5 py-2.5 text-[12.5px] leading-relaxed text-black"
                     : "max-w-[90%] rounded-xl border border-line bg-raised px-3.5 py-2.5 text-[12.5px] leading-relaxed text-fog"
                 }
               >
@@ -118,13 +118,13 @@ export default function ChatPanel({ spec, slug }: Props) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void ask()}
               placeholder="ask about voltage, ratings…"
-              className="min-w-0 flex-1 rounded-lg border border-line-strong bg-panel px-3 py-2 text-sm text-fog placeholder-fog-faint outline-none transition focus:border-black"
+              className="min-w-0 flex-1 rounded-lg border border-line-strong bg-black/30 px-3 py-2 text-sm text-fog placeholder-fog-faint outline-none transition focus:border-white"
             />
             <button
               type="button"
               onClick={() => void ask()}
               disabled={busy || !input.trim()}
-              className="rounded-lg bg-black px-4 text-sm font-bold text-white transition hover:bg-[#333333] disabled:opacity-40"
+              className="rounded-lg bg-white px-4 text-sm font-bold text-black transition hover:bg-fog disabled:opacity-40"
             >
               ↑
             </button>

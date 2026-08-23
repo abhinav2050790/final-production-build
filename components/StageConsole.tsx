@@ -114,7 +114,7 @@ export default function StageConsole({ lines, stages, onAudit }: Props) {
             <button
               type="button"
               onClick={onAudit}
-              className="rounded-lg border border-line bg-black/[0.04] px-3 py-1.5 text-xs text-fog transition hover:border-black hover:text-black"
+              className="rounded-lg border border-line bg-white/5 px-3 py-1.5 text-xs text-fog transition hover:border-white hover:text-white"
             >
               🧾 Technical details
             </button>

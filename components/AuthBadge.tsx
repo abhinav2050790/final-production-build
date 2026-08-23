@@ -73,7 +73,7 @@ export default function AuthBadge() {
         </span>
       )}
       {!loaded ? (
-        <span className="h-[38px] w-[190px] animate-pulse rounded-lg bg-black/[0.04]" />
+        <span className="h-[38px] w-[190px] animate-pulse rounded-lg bg-white/5" />
       ) : user ? (
         <div className="glass-strong flex items-center gap-2.5 rounded-full py-1.5 pl-1.5 pr-3">
           {user.picture ? (
@@ -85,11 +85,11 @@ export default function AuthBadge() {
               className="h-7 w-7 rounded-full"
             />
           ) : (
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black font-mono text-xs font-bold text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white font-mono text-xs font-bold text-black">
               {(user.name ?? user.email)[0]?.toUpperCase()}
             </span>
           )}
-          <span className="max-w-[140px] truncate text-xs font-medium text-black">
+          <span className="max-w-[140px] truncate text-xs font-medium text-white">
             {user.name ?? user.email}
           </span>
           <button
@@ -105,7 +105,7 @@ export default function AuthBadge() {
           <button
             type="button"
             onClick={signIn}
-            className="flex items-center gap-2.5 rounded-lg border border-line-strong bg-black/[0.04] px-4 py-2.5 text-sm font-medium text-black transition hover:border-black hover:bg-black hover:text-white"
+            className="flex items-center gap-2.5 rounded-lg border border-line-strong bg-white/5 px-4 py-2.5 text-sm font-medium text-white transition hover:border-white hover:bg-white hover:text-black"
           >
             <GoogleG />
             Sign in with Google

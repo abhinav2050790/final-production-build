@@ -11,7 +11,7 @@ interface Props {
 const SEVERITY_STYLE = {
   error: "border-accent bg-accent-subtle text-accent",
   warning: "border-amber-400/40 bg-amber-500/10 text-amber-300",
-  info: "border-line-strong bg-black/[0.04] text-fog-dim",
+  info: "border-line-strong bg-white/5 text-fog-dim",
 };
 
 const SEVERITY_ICON = { error: "✕", warning: "⚠", info: "ℹ" };
@@ -43,7 +43,7 @@ export default function DataQualityTab({ spec }: Props) {
         {stats.map((s, i) => (
           <div
             key={s.label}
-            className="animate-fade-up rounded-xl border border-black/8 bg-black/[0.03] p-3.5 text-center"
+            className="animate-fade-up rounded-xl border border-white/8 bg-white/[0.03] p-3.5 text-center"
             style={{ animationDelay: `${i * 60}ms` }}
           >
             <p className="text-xl font-bold text-fog">{s.value}</p>

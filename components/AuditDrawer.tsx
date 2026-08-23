@@ -14,20 +14,20 @@ interface Props {
 }
 
 const STAGE_ACCENT: Record<string, string> = {
-  ingest: "border-line-strong text-black",
-  extract: "border-line-strong text-black",
-  enrich: "border-line-strong text-black",
-  validate: "border-line-strong text-black",
-  export: "border-line-strong text-black",
+  ingest: "border-line-strong text-white",
+  extract: "border-line-strong text-white",
+  enrich: "border-line-strong text-white",
+  validate: "border-line-strong text-white",
+  export: "border-line-strong text-white",
   complete: "border-emerald-400/60 text-emerald-300",
 };
 
 const STAGE_LINE: Record<string, string> = {
-  ingest: "from-black/40",
-  extract: "from-black/40",
-  enrich: "from-black/40",
-  validate: "from-black/40",
-  export: "from-black/40",
+  ingest: "from-white/40",
+  extract: "from-white/40",
+  enrich: "from-white/40",
+  validate: "from-white/40",
+  export: "from-white/40",
 };
 
 const LEVEL_DOT: Record<string, string> = {
@@ -104,10 +104,10 @@ export default function AuditDrawer({ run, open, onClose }: Props) {
       />
       <div className="glass-strong animate-fade-up relative flex h-full max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl">
         {/* header */}
-        <div className="flex items-start justify-between gap-4 border-b border-black/8 px-6 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-white/8 px-6 py-4">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-bold text-black">🧾 Audit trail</h2>
+              <h2 className="text-lg font-bold text-white">🧾 Audit trail</h2>
               <span
                 className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
                   run.mode === "ai"
@@ -118,7 +118,7 @@ export default function AuditDrawer({ run, open, onClose }: Props) {
                 {run.mode === "ai" ? "live AI" : "demo heuristics"}
               </span>
               {run.totals && (
-                <span className="rounded-full border border-line bg-black/[0.04] px-2 py-0.5 text-[10px] text-fog-dim">
+                <span className="rounded-full border border-line bg-white/5 px-2 py-0.5 text-[10px] text-fog-dim">
                   {run.totals.products} products · quality {run.totals.score}/100
                 </span>
               )}
@@ -132,7 +132,7 @@ export default function AuditDrawer({ run, open, onClose }: Props) {
             type="button"
             onClick={onClose}
             aria-label="Close audit drawer"
-            className="shrink-0 rounded-lg border border-line bg-black/[0.04] px-2.5 py-1 text-sm text-fog-dim transition hover:border-black/25 hover:text-black"
+            className="shrink-0 rounded-lg border border-line bg-white/5 px-2.5 py-1 text-sm text-fog-dim transition hover:border-white/25 hover:text-white"
           >
             ✕
           </button>
@@ -153,7 +153,7 @@ export default function AuditDrawer({ run, open, onClose }: Props) {
                 )}
                 {/* icon */}
                 <span
-                  className={`absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-xl border bg-panel text-lg ${STAGE_ACCENT[g.id]}`}
+                  className={`absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-xl border bg-[#111111] text-lg ${STAGE_ACCENT[g.id]}`}
                 >
                   {stageIcon(g.id)}
                 </span>
@@ -163,7 +163,7 @@ export default function AuditDrawer({ run, open, onClose }: Props) {
                     {stageName(g.id)}
                   </h3>
                   {end?.durationMs !== undefined && (
-                    <span className="rounded-full border border-line bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-fog-dim">
+                    <span className="rounded-full border border-line bg-white/5 px-2 py-0.5 font-mono text-[10px] text-fog-dim">
                       {fmtDur(end.durationMs)}
                     </span>
                   )}
@@ -195,7 +195,7 @@ export default function AuditDrawer({ run, open, onClose }: Props) {
         </div>
 
         {/* footer */}
-        <div className="border-t border-black/8 px-6 py-3 text-[11px] text-fog-faint">
+        <div className="border-t border-white/8 px-6 py-3 text-[11px] text-fog-faint">
           Every event above was streamed live from the pipeline — nothing is
           reconstructed after the fact. Esc or click outside to close.
         </div>

@@ -151,13 +151,13 @@ export default function ExportTab({ spec }: Props) {
   return (
     <div className="space-y-4">
       {/* ── Primary: formatted PDF report ─────────────────────────────────── */}
-      <div className="glass animate-fade-up overflow-hidden rounded-2xl border-black/20">
+      <div className="glass animate-fade-up overflow-hidden rounded-2xl border-white/20">
         <div className="flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-panel font-mono text-[11px] font-bold tracking-widest text-black">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-black font-mono text-[11px] font-bold tracking-widest text-white">
             PDF
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-bold text-black">
+            <h3 className="text-base font-bold text-white">
               Formatted spec-sheet report
             </h3>
             <p className="mt-1.5 text-[12.5px] leading-relaxed text-fog-dim">
@@ -179,7 +179,7 @@ export default function ExportTab({ spec }: Props) {
             type="button"
             onClick={() => void downloadPdf()}
             disabled={pdfBusy}
-            className="w-full shrink-0 rounded-xl bg-black px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#333333] disabled:opacity-50 sm:w-auto"
+            className="w-full shrink-0 rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:bg-fog disabled:opacity-50 sm:w-auto"
           >
             {pdfBusy ? "⏳ rendering…" : "⬇ Download PDF"}
           </button>
@@ -190,7 +190,7 @@ export default function ExportTab({ spec }: Props) {
       <div className="glass animate-fade-up flex flex-col rounded-2xl p-5">
         <div className="flex items-center justify-between">
           <span className="text-2xl">📗</span>
-          <span className="rounded-full border border-line bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-fog-dim">
+          <span className="rounded-full border border-line bg-white/5 px-2 py-0.5 font-mono text-[10px] text-fog-dim">
             3 sheets
           </span>
         </div>
@@ -213,7 +213,7 @@ export default function ExportTab({ spec }: Props) {
           type="button"
           onClick={() => void downloadXlsx()}
           disabled={xlsxBusy}
-          className="mt-4 w-full rounded-lg border border-line-strong bg-black/[0.04] px-3 py-2.5 text-xs font-semibold text-fog transition hover:border-black hover:text-black disabled:opacity-50"
+          className="mt-4 w-full rounded-lg border border-line-strong bg-white/5 px-3 py-2.5 text-xs font-semibold text-fog transition hover:border-white hover:text-white disabled:opacity-50"
         >
           {xlsxBusy ? "⏳ building…" : "⬇ Download XLSX"}
         </button>
@@ -234,7 +234,7 @@ export default function ExportTab({ spec }: Props) {
             >
               <div className="flex items-center justify-between">
                 <span className="text-2xl">{f.icon}</span>
-                <span className="rounded-full border border-line bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-fog-dim">
+                <span className="rounded-full border border-line bg-white/5 px-2 py-0.5 font-mono text-[10px] text-fog-dim">
                   {kb(size)}
                 </span>
               </div>
@@ -248,7 +248,7 @@ export default function ExportTab({ spec }: Props) {
                 onClick={() =>
                   download(`${slugify(spec.title)}.${f.ext}`, spec.exports[f.id], f.mime)
                 }
-                className="mt-4 w-full rounded-lg border border-line-strong bg-black/[0.04] px-3 py-2.5 text-xs font-semibold text-fog transition hover:border-black hover:text-black"
+                className="mt-4 w-full rounded-lg border border-line-strong bg-white/5 px-3 py-2.5 text-xs font-semibold text-fog transition hover:border-white hover:text-white"
               >
                 ⬇ Download {f.ext.toUpperCase()}
               </button>

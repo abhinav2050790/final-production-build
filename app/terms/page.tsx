@@ -19,7 +19,7 @@ export default function TermsPage() {
         <p>
           Nexsus.Spec reads documents you provide and organizes their product
           information into structured pages. It is provided{" "}
-          <span className="text-black">as is</span>, currently as a demo build
+          <span className="text-white">as is</span>, currently as a demo build
           by Team Nexsus. Features may change, break while we improve them, or
           disappear — extraction results are best-effort, not certified data.
         </p>
