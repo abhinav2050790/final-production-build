@@ -40,6 +40,8 @@ function kb(size: number): string {
 export default function ExportTab({ spec }: Props) {
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const [xlsxBusy, setXlsxBusy] = useState(false);
+  const [xlsxError, setXlsxError] = useState<string | null>(null);
 
   const slimSpec = (): SpecDocument => {
     const payload = JSON.parse(JSON.stringify(spec)) as SpecDocument;
@@ -75,6 +77,36 @@ export default function ExportTab({ spec }: Props) {
       setPdfError(e instanceof Error ? e.message : "PDF export failed");
     } finally {
       setPdfBusy(false);
+    }
+  };
+
+  const downloadXlsx = async () => {
+    if (xlsxBusy) return;
+    setXlsxBusy(true);
+    setXlsxError(null);
+    try {
+      const res = await fetch("/api/export/xlsx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(slimSpec()),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${slugify(spec.title)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setXlsxError(e instanceof Error ? e.message : "Excel export failed");
+    } finally {
+      setXlsxBusy(false);
     }
   };
 
@@ -152,6 +184,39 @@ export default function ExportTab({ spec }: Props) {
             {pdfBusy ? "⏳ rendering…" : "⬇ Download PDF"}
           </button>
         </div>
+      </div>
+
+      {/* ── Excel workbook ────────────────────────────────────────────────── */}
+      <div className="glass animate-fade-up flex flex-col rounded-2xl p-5">
+        <div className="flex items-center justify-between">
+          <span className="text-2xl">📗</span>
+          <span className="rounded-full border border-line bg-white/5 px-2 py-0.5 font-mono text-[10px] text-fog-dim">
+            3 sheets
+          </span>
+        </div>
+        <h3 className="mt-2.5 text-sm font-semibold text-fog">Native Excel workbook</h3>
+        <p className="mt-1.5 text-[12px] leading-relaxed text-fog-dim">
+          A real .xlsx file built for Excel — filterable Catalog sheet, a
+          pivot-ready Specs sheet with every attribute:value pair, and a
+          summary page.
+        </p>
+        <p className="mt-2 flex-1 text-[11px] leading-relaxed text-fog-faint">
+          Includes: {spec.products.length} products ·{" "}
+          {spec.products.reduce((n, p) => n + p.attributes.length, 0)} spec rows · autofilters + frozen headers.
+        </p>
+        {xlsxError && (
+          <p className="mt-2 rounded-lg border-accent border bg-accent-subtle px-3 py-1.5 font-mono text-[10px] text-accent">
+            {xlsxError}
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => void downloadXlsx()}
+          disabled={xlsxBusy}
+          className="mt-4 w-full rounded-lg border border-line-strong bg-white/5 px-3 py-2.5 text-xs font-semibold text-fog transition hover:border-white hover:text-white disabled:opacity-50"
+        >
+          {xlsxBusy ? "⏳ building…" : "⬇ Download XLSX"}
+        </button>
       </div>
 
       {/* ── Raw data formats ──────────────────────────────────────────────── */}
