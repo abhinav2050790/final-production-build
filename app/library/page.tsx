@@ -5,6 +5,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
+import SiteFooter from "@/components/SiteFooter";
+
 interface Item {
   slug: string;
   title: string;
@@ -92,7 +94,7 @@ export default function LibraryPage() {
         </div>
       )}
 
-      {items && items.length === 0 && (
+      {items !== null && items.length === 0 && (
         <div className="glass rounded-2xl p-12 text-center">
           <p className="text-sm text-fog-dim">Nothing saved yet.</p>
           <p className="mt-2 text-xs text-fog-faint">
@@ -101,7 +103,7 @@ export default function LibraryPage() {
         </div>
       )}
 
-      {items && items.length > 0 && (
+      {items !== null && items.length > 0 && (
         <ul className="space-y-3">
           {items.map((it, i) => (
             <li
@@ -139,6 +141,10 @@ export default function LibraryPage() {
           ))}
         </ul>
       )}
+
+      <div className="mt-14">
+        <SiteFooter />
+      </div>
     </main>
   );
 }

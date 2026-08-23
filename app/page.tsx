@@ -16,6 +16,7 @@ import AuditDrawer from "@/components/AuditDrawer";
 import AuthBadge from "@/components/AuthBadge";
 import ChatPanel from "@/components/ChatPanel";
 import RoomIntro from "@/components/RoomIntro";
+import SiteFooter from "@/components/SiteFooter";
 import CompareTab from "@/components/CompareTab";
 import {
   AuditRun,
@@ -542,7 +543,7 @@ export default function Home() {
       )}
 
       {/* ── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/5 px-6 py-10 text-center" />
+      <SiteFooter />
 
       <ProductDetailDrawer
         product={selectedProduct}
