@@ -5,7 +5,6 @@
 // error that pdfjs-dist v3/v4 throws inside Node API routes.
 
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
-import { extractText, getDocumentProxy } from "unpdf";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,12 +14,15 @@ const MAX_TEXT = 16000; // mirrors the pipeline's ingest cap
 
 // modern pdf.js (via unpdf) — reconstructs damaged/missing XRef tables that
 // the legacy pdf-parse build throws on ("bad XRef entry" etc.)
+// dynamic import avoids ESM-only bundling issues at build time.
 async function parseWithUnpdf(buffer: Buffer) {
+  const { getDocumentProxy, extractText } = await import("unpdf");
   const pdf = await getDocumentProxy(new Uint8Array(buffer));
   const { totalPages, text } = await extractText(pdf, { mergePages: true });
+  const content = Array.isArray(text) ? text.join("\n") : text;
   return {
     pages: totalPages,
-    text: text.replace(/\0/g, "").replace(/[ \t]{2,}/g, " ").trim(),
+    text: content.replace(/\0/g, "").replace(/[ \t]{2,}/g, " ").trim(),
   };
 }
 
