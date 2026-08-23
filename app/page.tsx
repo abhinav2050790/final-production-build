@@ -333,7 +333,7 @@ export default function Home() {
           }}
         />
         <div className="animate-fade-up-slow relative z-10 max-w-4xl">
-          <h1 className="text-[14vw] font-bold leading-none tracking-tight text-white sm:text-[8rem]">
+          <h1 className="text-[10vw] font-bold uppercase leading-none tracking-widest text-white sm:text-[6.5rem]">
             Nexsus.Spec
           </h1>
           <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/5 px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-fog-dim">
@@ -351,13 +351,13 @@ export default function Home() {
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#studio"
-              className="rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:bg-fog"
+              className="rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-black shadow-glow transition hover:bg-[#E8E8E8]"
             >
               ⚡ Extract product data
             </a>
             <a
               href="#how"
-              className="rounded-xl border border-line-strong bg-transparent px-7 py-3.5 text-sm font-medium text-fog transition hover:border-white"
+              className="rounded-xl border border-[#333333] bg-transparent px-7 py-3.5 text-sm font-medium text-white transition hover:border-white"
             >
               How it works
             </a>
@@ -380,7 +380,7 @@ export default function Home() {
 
       {/* ── How it works ─────────────────────────────────────────────────── */}
       <section id="how" className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-center text-3xl font-bold text-white">
+        <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-white">
           The <span className="gradient-text">five-stage</span> forge
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-fog-dim">
