@@ -1,6 +1,6 @@
 # HANDOFF — SpecForge AI (read this first in a new session)
 
-State as of: 2026-08-22 (evening). This file is the session-to-session handoff.
+State as of: 2026-08-23 (afternoon). This file is the session-to-session handoff.
 The README covers the product; this covers the working state.
 
 ## What this app is
@@ -89,6 +89,20 @@ Verified: same input ×3 → identical fingerprints; repeats ~0.7s.
 - Input capped at 9,000 chars for the AI path (Groq TPM budget; PDFs truncate
   to first chunk).
 
+## Cinematic room intro (VERIFIED LIVE 2026-08-23)
+
+- `components/RoomIntro.tsx` + mount in `app/page.tsx` (~line 310).
+- Commit `b39f48d` fixed it never playing: unstable `onDone` identity kept
+  tearing down the timeline effect mid-play → now latest-ref; sessionStorage
+  wrapped in try/catch; skip rides the handoff dissolve.
+- **Verified on production** (headless, proper hydration waits): new visitor
+  plays ✓ · same-session revisit skips ✓ · `?intro` query param forces
+  playback (also proves deploys are current) ✓.
+- Test script: `.introtest.mjs` (`INTRO_URL=<url> node .introtest.mjs`) —
+  checks the `div[class*="z-[100]"]` overlay AFTER networkidle0, not at
+  domcontentloaded (old false-negative trap).
+- Plays once per browser session by design; reduced-motion users skip.
+
 ## Files that matter
 
 - `lib/ai.ts` — provider priority, fallback chain, 429 budget
@@ -96,6 +110,7 @@ Verified: same input ×3 → identical fingerprints; repeats ~0.7s.
 - `lib/pipeline/extractProducts.ts` — AI extraction + fallbacks
 - `components/ProductsTab.tsx`, `ProductDetailDrawer.tsx` — the dashboard
 - `app/page.tsx` — single-page shell (tabs: Products / Data quality / Export)
+- `components/RoomIntro.tsx` — cinematic intro (see section above)
 - `scripts/stress-demo.mjs` — old demo-mode suite (references removed story
   pipeline? verify before running — it predates the product pivot)
 
