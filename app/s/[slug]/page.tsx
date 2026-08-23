@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getPublicSpec } from "@/lib/db";
 import type { SpecDocument } from "@/lib/types";
-import ProductsTab from "@/components/ProductsTab";
+import ShareProductView from "@/components/ShareProductView";
 import DataQualityTab from "@/components/DataQualityTab";
 
 interface Props {
@@ -67,7 +67,7 @@ export default async function SharePage({ params }: Props) {
 
       <div className="space-y-10">
         <section>
-          <ProductsTab spec={spec} onSelect={() => {}} />
+          <ShareProductView spec={spec} />
         </section>
         <section>
           <DataQualityTab spec={spec} />

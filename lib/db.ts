@@ -68,7 +68,7 @@ export async function saveExtraction(
   const rows = await sql`
     INSERT INTO extractions (slug, owner_email, title, doc_type, model, spec, product_count)
     VALUES (${slug}, ${ownerEmail}, ${spec.title}, ${spec.input?.detectedType ?? "document"},
-            ${spec.model ?? null}, ${JSON.stringify(spec)}, ${spec.products.length})
+            ${spec.model ?? null}, ${sql.json(spec as unknown as Parameters<typeof sql.json>[0])}, ${spec.products.length})
     RETURNING slug, owner_email, title, doc_type, model, product_count, created_at`;
   return rows[0] as unknown as LibraryRecord;
 }
