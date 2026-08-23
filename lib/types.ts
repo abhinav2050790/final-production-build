@@ -32,6 +32,8 @@ export interface Segment {
 export interface ProductAttribute {
   name: string;
   value: string;
+  /** Verbatim snippet from the source document backing this value (evidence). */
+  source?: string;
 }
 
 export interface ProductRecord {

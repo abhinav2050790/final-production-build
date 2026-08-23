@@ -30,3 +30,5 @@ next-env.d.ts
 
 # runtime extraction cache
 /.specforge-cache/
+.vercel
+.env*

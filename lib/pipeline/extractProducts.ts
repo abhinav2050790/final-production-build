@@ -35,13 +35,56 @@ export interface ProductExtraction {
 }
 
 /** Bump to invalidate every cached extraction after a prompt change. */
-export const EXTRACTION_PROMPT_VERSION = "v3-groq-gpt-oss-120b";
+export const EXTRACTION_PROMPT_VERSION = "v4-evidence-chunked";
+
+/** How many document chunks may be extracted sequentially (multi-page PDFs). */
+const MAX_CHUNKS = Number(process.env.EXTRACT_MAX_CHUNKS ?? 3);
 
 interface CacheEntry {
   v: string;
   products: ProductRecord[];
   model: string;
   savedAt: string;
+}
+
+/** Attach verbatim source snippets backing each attribute value (evidence). */
+function attachEvidence(products: ProductRecord[], rawText: string): void {
+  const hay = rawText.toLowerCase();
+  for (const p of products) {
+    for (const a of p.attributes) {
+      const needle = a.value.toLowerCase().replace(/\s+/g, " ").trim();
+      if (!needle || /^(null|-|n\/a)$/.test(needle)) continue;
+      let idx = hay.indexOf(needle);
+      if (idx === -1 && p.name) {
+        // second chance: look near where this product's name appears
+        const nIdx = hay.indexOf(p.name.toLowerCase().slice(0, 12));
+        if (nIdx !== -1) {
+          const winStart = Math.max(0, nIdx - 300);
+          const rel = hay.indexOf(needle, winStart);
+          if (rel !== -1 && rel <= nIdx + 900) idx = rel;
+        }
+      }
+      if (idx !== -1) {
+        const start = Math.max(0, idx - 70);
+        const end = Math.min(rawText.length, idx + needle.length + 70);
+        a.source =
+          `…${rawText.slice(start, end).replace(/\s+/g, " ").trim()}…`.slice(0, 220);
+      }
+    }
+  }
+}
+
+/** Merge chunk extractions, dropping duplicate products across chunk borders. */
+function mergeChunkProducts(all: ProductRecord[]): ProductRecord[] {
+  const seen = new Set<string>();
+  const out: ProductRecord[] = [];
+  for (const p of all) {
+    const key = `${p.partNumber ?? ""}|${p.name.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ ...p, id: `P-${String(out.length + 1).padStart(3, "0")}` });
+  }
+  return out.slice(0, 25);
 }
 
 const clean = (s: unknown, max = 240): string | undefined => {
@@ -109,77 +152,101 @@ export async function extractProducts(
 
   if (!allowAi) return fallback();
 
-  // Frozen-result cache: the same document returns the exact same extraction,
-  // instantly — no model roulette, no pool congestion, no waiting.
-  if (!refresh) {
-    const key = extractionKey(EXTRACTION_PROMPT_VERSION, ingest.rawText);
-    const cached = await loadExtraction<CacheEntry>(key);
-    if (cached?.v === EXTRACTION_PROMPT_VERSION && cached.products?.length) {
-      return { products: cached.products, mode: "ai", cached: true, model: cached.model };
-    }
+  // Groq free tier: 8,000 TPM counted as prompt + max_tokens per request.
+  // Chunk ≈ 9k chars ≈ ≤3,100 tokens + ~350 overhead + 4,500 output — fits.
+  const fullText = ingest.segments.map((s) => s.text).join("\n");
+  const CHUNK = 9000;
+  const chunks: string[] = [];
+  for (let i = 0; i < fullText.length && chunks.length < MAX_CHUNKS; i += CHUNK) {
+    chunks.push(fullText.slice(i, i + CHUNK));
   }
 
-  // Groq free tier: 8,000 TPM counted as prompt + max_tokens per request.
-  // Doc ~9k chars ≈ ≤3,100 tokens + ~350 prompt overhead + 4,500 output
-  // ≈ 7,950 worst case — fits under the cap.
-  const doc = ingest.segments
-    .map((s) => `[${s.index}] ${s.text}`)
-    .join("\n")
-    .slice(0, 9000);
+  let usedModel: string | null = null;
+  let anyCached = true;
+  let lastError: string | null = null;
+  const merged: ProductRecord[] = [];
 
-  const { content, model, error } = await aiComplete(
-    [
-      {
-        role: "system",
-        content:
-          "You are SpecForge's product data engine. You read messy documents " +
-          "(spec sheets, catalogs, datasheets, listings) and return structured " +
-          "product data. Respond with a SINGLE valid JSON object only — no prose, " +
-          "no markdown fences. Be precise and complete with attribute values.",
-      },
-      {
-        role: "user",
-        content:
-          `Document (detected as: ${ingest.detectedType}):\n\n${doc}\n\n` +
-          'Extract every distinct product. Return {"products":[{"name":"product name",' +
-          '"partNumber":"or null","brand":"or null","category":"or null",' +
-          '"description":"one sentence","attributes":[{"name":"Voltage","value":"230V"}],' +
-          '"keyFeatures":["short benefit"],"useCases":["who uses it for what"]}]}. ' +
-          "Rules: capture EVERY specification with its exact value as an attribute " +
-          "(voltage, current, frequency, range, output, dimensions, weight, material, " +
-          "connectivity, capacity, speed, protection class — whatever the document states); " +
-          "use Title Case attribute names from the document; omit attributes that are not " +
-          "stated; 2-5 key features; 2-4 use cases; max 20 products.",
-      },
-    ],
-    // Groq answers in ~1-5s; a 45s per-attempt cap leaves room for a second
-    // attempt inside aiComplete's 75s budget if one request hangs.
-    { temperature: 0, maxTokens: 4500, reasoningEffort: "low", timeoutMs: 45_000 }
-  );
-
-  if (content) {
-    const parsed = extractJson<{ products?: AiProduct[] }>(content);
-    const products = normalizeProducts(parsed?.products ?? []);
-    if (products.length > 0) {
-      // Freeze this extraction: same document in → same products out, forever.
-      // A refresh run overwrites the previous entry with the new roll.
-      const key = extractionKey(EXTRACTION_PROMPT_VERSION, ingest.rawText);
-      const usedModel = model ?? aiModel();
-      await saveExtraction(key, {
-        v: EXTRACTION_PROMPT_VERSION,
-        products,
-        model: usedModel,
-        savedAt: new Date().toISOString(),
-      } satisfies CacheEntry);
-      return { products, mode: "ai", model: usedModel };
+  for (let ci = 0; ci < chunks.length; ci++) {
+    // Frozen-result cache: same chunk text → identical products, instantly.
+    const cacheKey = extractionKey(EXTRACTION_PROMPT_VERSION, chunks[ci]);
+    if (!refresh) {
+      const cached = await loadExtraction<CacheEntry>(cacheKey);
+      if (cached?.v === EXTRACTION_PROMPT_VERSION && cached.products?.length) {
+        merged.push(...cached.products);
+        continue;
+      }
     }
+    anyCached = false;
+
+    const doc = chunks[ci];
+    const { content, model, error } = await aiComplete(
+      [
+        {
+          role: "system",
+          content:
+            "You are SpecForge's product data engine. You read messy documents " +
+            "(spec sheets, catalogs, datasheets, listings) and return structured " +
+            "product data. Respond with a SINGLE valid JSON object only — no prose, " +
+            "no markdown fences. Be precise and complete with attribute values.",
+        },
+        {
+          role: "user",
+          content:
+            `Document part ${ci + 1}/${chunks.length} (detected as: ${ingest.detectedType}):\n\n${doc}\n\n` +
+            'Extract every distinct product. Return {"products":[{"name":"product name",' +
+            '"partNumber":"or null","brand":"or null","category":"or null",' +
+            '"description":"one sentence","attributes":[{"name":"Voltage","value":"230V"}],' +
+            '"keyFeatures":["short benefit"],"useCases":["who uses it for what"]}]}. ' +
+            "Rules: capture EVERY specification with its exact value as an attribute " +
+            "(voltage, current, frequency, range, output, dimensions, weight, material, " +
+            "connectivity, capacity, speed, protection class — whatever the document states); " +
+            "use Title Case attribute names from the document; omit attributes that are not " +
+            "stated; 2-5 key features; 2-4 use cases; max 20 products.",
+        },
+      ],
+      // Groq answers in ~1-5s; a 45s per-attempt cap leaves room for a second
+      // attempt inside aiComplete's budget if one request hangs.
+      { temperature: 0, maxTokens: 4500, reasoningEffort: "low", timeoutMs: 45_000 }
+    );
+
+    if (content) {
+      const parsed = extractJson<{ products?: AiProduct[] }>(content);
+      const chunkProducts = normalizeProducts(parsed?.products ?? []);
+      if (chunkProducts.length > 0) {
+        usedModel = model ?? aiModel();
+        await saveExtraction(cacheKey, {
+          v: EXTRACTION_PROMPT_VERSION,
+          products: chunkProducts,
+          model: usedModel,
+          savedAt: new Date().toISOString(),
+        } satisfies CacheEntry);
+        merged.push(...chunkProducts);
+        continue;
+      }
+    }
+    lastError = error ?? "empty extraction";
+  }
+
+  if (merged.length > 0) {
+    const products = mergeChunkProducts(merged);
+    attachEvidence(products, ingest.rawText);
+    return {
+      products,
+      mode: "ai",
+      cached: !refresh && anyCached,
+      model: usedModel ?? aiModel(),
+      note:
+        chunks.length > 1 && lastError && products.length > 0
+          ? `Multi-part document: ${chunks.length} parts processed; some parts could not be extracted${lastError ? ` (${lastError.slice(0, 90)})` : ""}.`
+          : undefined,
+    };
   }
 
   const fb = fallback();
   return {
     ...fb,
-    note: error
-      ? `AI extraction failed (${error.slice(0, 140)}) — ${fb.note}`
+    note: lastError
+      ? `AI extraction failed (${lastError.slice(0, 140)}) — ${fb.note}`
       : fb.note,
   };
 }

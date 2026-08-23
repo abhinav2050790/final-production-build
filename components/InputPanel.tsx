@@ -35,11 +35,39 @@ export default function InputPanel({
   const [uploadNote, setUploadNote] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [pageUrl, setPageUrl] = useState("");
+  const [fetchingPage, setFetchingPage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const words = useMemo(() => text.trim().split(/\s+/).filter(Boolean).length, [text]);
   const ready = text.trim().length >= 40;
   const busy = running || uploading;
+
+  const fetchPage = async () => {
+    if (!/^https?:\/\//i.test(pageUrl.trim())) {
+      setUploadError("Paste a full http(s) URL of the product page.");
+      return;
+    }
+    setFetchingPage(true);
+    setUploadError(null);
+    try {
+      const res = await fetch("/api/ingest-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: pageUrl.trim() }),
+      });
+      const d = (await res.json()) as { text?: string; title?: string; chars?: number; error?: string };
+      if (!res.ok || !d.text) {
+        setUploadError(d.error ?? `Fetch failed (HTTP ${res.status}).`);
+        return;
+      }
+      applyExtracted(d.text, `fetched ${d.chars} chars from the page`, d.title);
+    } catch {
+      setUploadError("Could not reach that page.");
+    } finally {
+      setFetchingPage(false);
+    }
+  };
 
   const loadSample = (id: string) => {
     const s = SAMPLES.find((x) => x.id === id);
@@ -255,6 +283,26 @@ export default function InputPanel({
             clear
           </button>
         </span>
+      </div>
+
+      {/* URL ingestion */}
+      <div className="flex gap-2">
+        <input
+          value={pageUrl}
+          onChange={(e) => setPageUrl(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && void fetchPage()}
+          disabled={busy}
+          placeholder="…or paste a product-page URL and pull its text"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-black/30 px-3 py-2 font-mono text-[12px] text-fog placeholder-fog-faint outline-none transition focus:border-white disabled:opacity-60"
+        />
+        <button
+          type="button"
+          onClick={() => void fetchPage()}
+          disabled={busy || fetchingPage || !pageUrl.trim()}
+          className="shrink-0 rounded-lg border border-line-strong bg-white/5 px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-fog-dim transition hover:border-white hover:text-white disabled:opacity-40"
+        >
+          {fetchingPage ? "fetching…" : "fetch ↧"}
+        </button>
       </div>
 
       {uploadError && (

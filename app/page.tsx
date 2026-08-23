@@ -1,8 +1,9 @@
 "use client";
 
-// ── SpecForge AI — product data extractor, single-page app shell ──────────────
+// ── Nexsus.Spec — product data extractor, single-page app shell ───────────────
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import ParticleHero from "@/components/ParticleHero";
 import Pipeline3D, { PipelineStageState } from "@/components/Pipeline3D";
 import StageConsole, { ConsoleLine } from "@/components/StageConsole";
@@ -14,6 +15,8 @@ import ExportTab from "@/components/ExportTab";
 import AuditDrawer from "@/components/AuditDrawer";
 import BootSequence from "@/components/BootSequence";
 import AuthBadge from "@/components/AuthBadge";
+import ChatPanel from "@/components/ChatPanel";
+import CompareTab from "@/components/CompareTab";
 import {
   AuditRun,
   PipelineEvent,
@@ -24,7 +27,7 @@ import {
   STAGES,
 } from "@/lib/types";
 
-type Tab = "products" | "quality" | "export";
+type Tab = "products" | "compare" | "quality" | "export";
 
 function initialStages(): PipelineStageState[] {
   return STAGES.map((s) => ({ id: s.id, name: s.name, icon: s.icon, status: "idle" as StageStatus }));
@@ -50,8 +53,7 @@ export default function Home() {
   const lastInputRef = useRef<{ text: string; title: string } | null>(null);
 
   // ── Boot-sequence gated navigation ─────────────────────────────────────
-  const [booting, setBooting] = useState(false);
-  const bootTargetRef = useRef<string>("studio");
+  const [booting, setBooting] = useState(false);  const bootTargetRef = useRef<string>("studio");
   const bootTo = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     bootTargetRef.current = targetId;
@@ -63,6 +65,42 @@ export default function Home() {
       ?.scrollIntoView({ behavior: "auto", block: "start" });
   }, []);
   const bootDone = useCallback(() => setBooting(false), []);
+
+  // ── Cloud library ──────────────────────────────────────────────────────
+  const [saving, setSaving] = useState(false);
+  const [savedSlug, setSavedSlug] = useState<string | null>(null);
+  const saveToLibrary = useCallback(async () => {
+    if (!spec || saving) return;
+    setSaving(true);
+    try {
+      const payload = JSON.parse(JSON.stringify(spec)) as SpecDocument;
+      // slim the payload — the share view never needs the raw corpus
+      delete (payload.input as unknown as { rawText?: string }).rawText;
+      delete (payload.input as unknown as { segments?: unknown }).segments;
+      const res = await fetch("/api/library", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const d = (await res.json()) as { record?: { slug: string }; error?: string };
+      if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
+      setSavedSlug(d.record!.slug);
+      setToast(`Saved to library ✓ /s/${d.record!.slug}`);
+    } catch (e) {
+      setToast(`⚠ ${e instanceof Error ? e.message : "could not save"}`);
+    } finally {
+      setSaving(false);
+    }
+  }, [spec, saving]);
+
+  const updateProduct = useCallback((updated: ProductRecord) => {
+    setSpec((s) =>
+      s
+        ? { ...s, products: s.products.map((p) => (p.id === updated.id ? updated : p)) }
+        : s
+    );
+    setSelectedProduct(updated);
+  }, []);
 
   const effectiveMode: "ai" | "demo" = aiAvailable && !demoForced ? "ai" : "demo";
 
@@ -280,8 +318,14 @@ export default function Home() {
   return (
     <main className="relative">
       {/* ── Google account badge ──────────────────────────────────────────── */}
-      <div className="pointer-events-none absolute right-4 top-4 z-40 sm:right-6 sm:top-6">
+      <div className="pointer-events-none absolute right-4 top-4 z-40 flex flex-col items-end gap-2 sm:right-6 sm:top-6">
         <AuthBadge />
+        <Link
+          href="/library"
+          className="pointer-events-auto rounded-lg border border-line-strong bg-white/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-fog-dim transition hover:border-white hover:text-white"
+        >
+          📚 my library
+        </Link>
       </div>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
@@ -454,6 +498,28 @@ export default function Home() {
               )}
               <button
                 type="button"
+                onClick={() => void saveToLibrary()}
+                disabled={saving}
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                  savedSlug
+                    ? "border border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
+                    : "border border-line-strong bg-white/5 text-fog hover:border-white hover:text-white"
+                } disabled:opacity-50`}
+                title="Save this extraction to your cloud library and get a share link"
+              >
+                {savedSlug ? "✓ saved" : saving ? "saving…" : "☁ Save to library"}
+              </button>
+              {savedSlug && (
+                <Link
+                  href={`/s/${savedSlug}`}
+                  target="_blank"
+                  className="rounded-xl border border-line-strong bg-white/5 px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-fog-dim transition hover:border-white hover:text-white"
+                >
+                  /s/{savedSlug} ↗
+                </Link>
+              )}
+              <button
+                type="button"
                 onClick={() => setAuditOpen(true)}
                 disabled={!audit || audit.entries.length === 0}
                 className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
@@ -466,6 +532,7 @@ export default function Home() {
               </button>
               <div className="flex gap-1.5 rounded-2xl border border-white/8 bg-white/[0.03] p-1.5">
                 {tabBtn("products", "Products", "🧱")}
+                {tabBtn("compare", "Compare", "⚖️")}
                 {tabBtn("quality", "Data quality", "🛡️")}
                 {tabBtn("export", "Export", "📦")}
               </div>
@@ -476,6 +543,7 @@ export default function Home() {
             {tab === "products" && (
               <ProductsTab spec={spec} onSelect={setSelectedProduct} />
             )}
+            {tab === "compare" && <CompareTab spec={spec} />}
             {tab === "quality" && <DataQualityTab spec={spec} />}
             {tab === "export" && <ExportTab spec={spec} />}
           </div>
@@ -488,7 +556,10 @@ export default function Home() {
       <ProductDetailDrawer
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
+        onChange={updateProduct}
       />
+
+      {spec && !booting && <ChatPanel spec={spec} />}
 
       <AuditDrawer
         run={audit}

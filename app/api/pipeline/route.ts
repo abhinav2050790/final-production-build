@@ -1,5 +1,6 @@
 import { runPipeline, WARMUP_SEED } from "@/lib/pipeline/runner";
 import { aiConfigured, aiModel, aiProvider } from "@/lib/ai";
+import { checkRate } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +33,18 @@ export async function POST(req: Request) {
       { error: "Give the forge at least ~40 characters of raw input." },
       { status: 400 }
     );
+  }
+
+  // Fair-use guard: the AI keys are shared by every visitor.
+  if (!warmup) {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+    const limit = checkRate("extract", ip);
+    if (!limit.ok) {
+      return Response.json(
+        { error: `Fair-use limit reached (${limit.retryAfterMin} min until your next free extraction). Sign in and reuse your saved extractions, or press Shift+D for offline mode.` },
+        { status: 429 }
+      );
+    }
   }
 
   const stream = new ReadableStream<Uint8Array>({
