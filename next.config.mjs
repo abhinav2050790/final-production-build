@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     // keep pdf-parse external so its bundled pdf.js runs natively under Node
-    serverComponentsExternalPackages: ["pdf-parse", "@react-pdf/renderer"],
+    serverComponentsExternalPackages: ["pdf-parse", "pdfjs-dist", "@react-pdf/renderer"],
   },
 };
 

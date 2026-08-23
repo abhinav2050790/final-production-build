@@ -1,8 +1,7 @@
-// ── PDF → text extraction (workerless, Node-safe) ─────────────────────────────
-// Uses pdf-parse's CJS build (pdf.js 1.x) which runs entirely in-process —
-// no worker loading, so it cannot hit the classic
-// "fake worker failed: Only URLs with a scheme in: file and data are supported"
-// error that pdfjs-dist v3/v4 throws inside Node API routes.
+// ── PDF → text extraction with multi-parser fallback ──────────────────────────
+// Layer 1: pdf-parse (CJS, fast, handles most PDFs)
+// Layer 2: pdfjs-dist v3 (Mozilla PDF.js, handles damaged/missing XRef tables)
+// Both run in-process — no web workers, no "fake worker" errors.
 
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
@@ -11,6 +10,37 @@ export const dynamic = "force-dynamic";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_TEXT = 16000; // mirrors the pipeline's ingest cap
+
+// ── pdfjs-dist v3 fallback ───────────────────────────────────────────────────
+// Runs entirely in the main thread using the LoopbackPort fake-worker pattern.
+// Handles damaged/missing XRef tables that throw pdf-parse's legacy pdf.js.
+async function parseWithPdfjs(buffer: Buffer): Promise<{ text: string; pages: number }> {
+  // Provide the WorkerMessageHandler so pdfjs-dist skips real worker creation
+  const workerModule = require("pdfjs-dist/build/pdf.worker.js");
+  globalThis.pdfjsWorker = { WorkerMessageHandler: workerModule.WorkerMessageHandler };
+
+  const pdfjsLib = require("pdfjs-dist/build/pdf.js");
+  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
+  const doc = await loadingTask.promise;
+
+  const pageTexts: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    const strings = content.items
+      .filter((item: any) => "str" in item)
+      .map((item: any) => item.str);
+    pageTexts.push(strings.join(" "));
+  }
+
+  const text = pageTexts
+    .join("\n")
+    .replace(/\0/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+
+  return { text, pages: doc.numPages };
+}
 
 export async function POST(req: Request) {
   let form: FormData;
@@ -38,41 +68,53 @@ export async function POST(req: Request) {
     );
   }
 
-  try {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const parsed = await pdfParse(buffer);
-    const text = parsed.text
-      .replace(/\0/g, "")
-      .replace(/[ \t]{2,}/g, " ")
-      .trim();
+  const buffer = Buffer.from(await file.arrayBuffer());
 
-    if (text.length < 30) {
+  // ── Layer 1: pdf-parse (fast path) ──────────────────────────────────────────
+  let text = "";
+  let pages = 0;
+
+  try {
+    const parsed = await pdfParse(buffer);
+    text = parsed.text;
+    pages = parsed.numpages;
+  } catch {
+    // pdf-parse failed — fall through to Layer 2
+  }
+
+  // ── Layer 2: pdfjs-dist fallback (handles damaged PDFs) ─────────────────────
+  if (text.length < 30) {
+    try {
+      const alt = await parseWithPdfjs(buffer);
+      text = alt.text;
+      pages = alt.pages;
+    } catch (fallbackErr) {
+      const msg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
       return Response.json(
-        {
-          error:
-            "No extractable text found — this PDF is likely scanned images and would need OCR. Paste the text manually instead.",
-        },
-        { status: 422 }
+        { error: `PDF parsing failed: both parsers could not read this file. ${msg}` },
+        { status: 500 }
       );
     }
+  }
 
-    const truncated = text.length > MAX_TEXT;
-    return Response.json({
-      text: truncated ? text.slice(0, MAX_TEXT) : text,
-      pages: parsed.numpages,
-      chars: text.length,
-      truncated,
-      name,
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    const hint =
-      /xref|bad.*entry|invalid|corrupt/i.test(message)
-        ? " This PDF may have a damaged structure — try re-exporting it from the original application."
-        : "";
+  text = text.replace(/\0/g, "").replace(/[ \t]{2,}/g, " ").trim();
+
+  if (text.length < 30) {
     return Response.json(
-      { error: `PDF parsing failed: ${message}${hint}` },
-      { status: 500 }
+      {
+        error:
+          "No extractable text found — this PDF is likely scanned images and would need OCR. Paste the text manually instead.",
+      },
+      { status: 422 }
     );
   }
+
+  const truncated = text.length > MAX_TEXT;
+  return Response.json({
+    text: truncated ? text.slice(0, MAX_TEXT) : text,
+    pages,
+    chars: text.length,
+    truncated,
+    name,
+  });
 }
