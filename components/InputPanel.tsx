@@ -101,12 +101,17 @@ export default function InputPanel({
       (f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf"
     );
     const txts = list.filter(
-      (f) => /\.(txt|md)$/i.test(f.name) || f.type.startsWith("text/")
+      (f) =>
+        /\.(txt|md|csv|json|log)$/i.test(f.name) ||
+        f.type.startsWith("text/") ||
+        f.type === "application/json"
     );
     const skipped = list.length - pdfs.length - txts.length;
 
     if (pdfs.length === 0 && txts.length === 0) {
-      setUploadError("Unsupported file — attach PDF, TXT or MD files.");
+      setUploadError(
+        "Unsupported file — attach PDF, TXT, MD, CSV, JSON or LOG files."
+      );
       return;
     }
 
@@ -114,6 +119,7 @@ export default function InputPanel({
     const sections: string[] = [];
     const docNames: string[] = [];
     const failed: string[] = [];
+    const recoveredFallbacks: string[] = [];
     let pages = 0;
     try {
       for (const f of txts) {
@@ -136,6 +142,7 @@ export default function InputPanel({
             pages?: number;
             chars?: number;
             truncated?: boolean;
+            degraded?: boolean;
             name?: string;
             error?: string;
           };
@@ -143,8 +150,11 @@ export default function InputPanel({
             throw new Error(data.error ?? `Extraction failed (${res.status}).`);
           }
           pages += data.pages ?? 0;
-          sections.push(`──── ${data.name ?? f.name} ────\n${data.text}`);
+          sections.push(
+            `──── ${data.name ?? f.name} ────\n${data.text}`
+          );
           docNames.push(data.name ?? f.name);
+          if (data.degraded) recoveredFallbacks.push(data.name ?? f.name);
         } catch (err) {
           failed.push(
             `${f.name} (${err instanceof Error ? err.message : "read failed"})`
@@ -162,6 +172,9 @@ export default function InputPanel({
         `📄 ${docNames.length} document${docNames.length === 1 ? "" : "s"} loaded`,
         pages > 0 ? `${pages} pages` : null,
         `${combined.length.toLocaleString()} chars`,
+        recoveredFallbacks.length > 0
+          ? `recovered ${recoveredFallbacks.length} damaged file${recoveredFallbacks.length === 1 ? "" : "s"}`
+          : null,
         failed.length > 0 ? `${failed.length} file${failed.length === 1 ? "" : "s"} failed` : null,
         skipped > 0 ? `${skipped} unsupported file${skipped === 1 ? "" : "s"} skipped` : null,
       ].filter(Boolean);
@@ -169,7 +182,7 @@ export default function InputPanel({
         combined,
         bits.join(" · "),
         docNames.length === 1
-          ? docNames[0].replace(/\.(pdf|txt|md)$/i, "")
+          ? docNames[0].replace(/\.(pdf|txt|md|csv|json|log)$/i, "")
           : undefined
       );
       if (failed.length > 0) {
@@ -295,7 +308,7 @@ export default function InputPanel({
             ref={fileInputRef}
             type="file"
             multiple
-            accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown"
+            accept=".pdf,.txt,.md,.csv,.json,.log,application/pdf,text/plain,text/markdown,text/csv,application/json"
             className="hidden"
             onChange={(e) => void handleFiles(e.target.files)}
           />
