@@ -54,6 +54,7 @@ export default function Home() {
 
   // ── Cinematic room intro ───────────────────────────────────────────────
   const [introGone, setIntroGone] = useState(true);
+  const handleIntroDone = useCallback(() => setIntroGone(true), []);
   useEffect(() => setIntroGone(false), []);
 
   // ── Cloud library ──────────────────────────────────────────────────────
@@ -307,7 +308,7 @@ export default function Home() {
 
   return (
     <main className="relative">
-      {!introGone && <RoomIntro onDone={() => setIntroGone(true)} />}
+      {!introGone && <RoomIntro onDone={handleIntroDone} />}
 
       {/* ── Google account badge ──────────────────────────────────────────── */}
       <div className="pointer-events-none absolute right-4 top-4 z-40 flex flex-col items-end gap-2 sm:right-6 sm:top-6">

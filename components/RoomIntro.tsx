@@ -24,40 +24,63 @@ export default function RoomIntro({ onDone }: { onDone?: () => void }) {
   const [mounted, setMounted] = useState(false);
   const timers = useRef<number[]>([]);
 
-  const finish = useCallback(() => {
-    setPhase("gone");
-    onDone?.();
-    // let the CSS fade play out before unmounting
-    timers.current.push(window.setTimeout(() => setPhase("gone"), 650));
+  // latest-ref: keeps `finish` identity stable so Home re-renders can never
+  // tear down and restart the timeline effect mid-play
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
   }, [onDone]);
 
+  const clearTimers = useCallback(() => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = [];
+  }, []);
+
+  const finish = useCallback(() => {
+    clearTimers();
+    setPhase("gone");
+    onDoneRef.current?.();
+  }, [clearTimers]);
+
   useEffect(() => {
-    // one per browser session; reduced-motion visitors go straight in
-    if (
+    // one per browser session; reduced-motion visitors go straight in.
+    // `?intro` forces playback regardless (demo/testing).
+    let seen = false;
+    let reduced = false;
+    try {
+      seen = sessionStorage.getItem("nx_intro_seen") === "1";
+      reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      // storage blocked — play anyway, just don't persist
+    }
+    const forced =
       typeof window !== "undefined" &&
-      (sessionStorage.getItem("nx_intro_seen") ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-    ) {
+      new URLSearchParams(window.location.search).has("intro");
+
+    if ((seen || reduced) && !forced) {
       finish();
       return;
     }
     setMounted(true);
-    sessionStorage.setItem("nx_intro_seen", "1");
+    try {
+      sessionStorage.setItem("nx_intro_seen", "1");
+    } catch {}
 
-    let acc = 0;
     for (const [p, t] of TIMELINE) {
-      acc += 0;
       timers.current.push(window.setTimeout(() => setPhase(p), t));
     }
-    timers.current.push(window.setTimeout(finish, 4950));
+    // 5100ms lets the 700ms handoff dissolve complete before unmount
+    timers.current.push(window.setTimeout(finish, 5100));
 
-    return () => timers.current.forEach((t) => window.clearTimeout(t));
-  }, [finish]);
+    return () => clearTimers();
+  }, [finish, clearTimers]);
 
-  const skip = () => {
-    timers.current.forEach((t) => window.clearTimeout(t));
-    finish();
-  };
+  const skip = useCallback(() => {
+    clearTimers();
+    // ride the existing handoff dissolve (700ms) instead of cutting hard
+    setPhase("handoff");
+    timers.current.push(window.setTimeout(finish, 720));
+  }, [clearTimers, finish]);
 
   const at = (p: Phase) => phase === p;
   const since = (...ps: Phase[]) => ps.includes(phase);
