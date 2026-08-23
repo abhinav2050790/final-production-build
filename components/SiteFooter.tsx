@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/contact", label: "contact" },
   { href: "/privacy", label: "privacy" },
   { href: "/terms", label: "terms" },
+  { href: "/design", label: "design" },
 ];
 
 export default function SiteFooter() {

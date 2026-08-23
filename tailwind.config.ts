@@ -26,6 +26,7 @@ const config: Config = {
           DEFAULT: "#d71921", // Nothing red — signal only, never decoration
           subtle: "rgba(215, 25, 33, 0.15)",
         },
+        success: "#22C55E", // emerald — positive status only
       },
       fontFamily: {
         sans: ["var(--font-grotesk)", "ui-sans-serif", "system-ui", "sans-serif"],
