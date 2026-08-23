@@ -13,7 +13,6 @@ import ProductDetailDrawer from "@/components/ProductDetailDrawer";
 import DataQualityTab from "@/components/DataQualityTab";
 import ExportTab from "@/components/ExportTab";
 import AuditDrawer from "@/components/AuditDrawer";
-import BootSequence from "@/components/BootSequence";
 import AuthBadge from "@/components/AuthBadge";
 import ChatPanel from "@/components/ChatPanel";
 import CompareTab from "@/components/CompareTab";
@@ -51,20 +50,6 @@ export default function Home() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<HTMLDivElement>(null);
   const lastInputRef = useRef<{ text: string; title: string } | null>(null);
-
-  // ── Boot-sequence gated navigation ─────────────────────────────────────
-  const [booting, setBooting] = useState(false);  const bootTargetRef = useRef<string>("studio");
-  const bootTo = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
-    e.preventDefault();
-    bootTargetRef.current = targetId;
-    setBooting(true);
-  };
-  const bootArrive = useCallback(() => {
-    document
-      .getElementById(bootTargetRef.current)
-      ?.scrollIntoView({ behavior: "auto", block: "start" });
-  }, []);
-  const bootDone = useCallback(() => setBooting(false), []);
 
   // ── Cloud library ──────────────────────────────────────────────────────
   const [saving, setSaving] = useState(false);
@@ -357,14 +342,12 @@ export default function Home() {
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#studio"
-              onClick={(e) => bootTo(e, "studio")}
               className="rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:bg-fog"
             >
               ⚡ Extract product data
             </a>
             <a
               href="#how"
-              onClick={(e) => bootTo(e, "how")}
               className="rounded-xl border border-line-strong bg-transparent px-7 py-3.5 text-sm font-medium text-fog transition hover:border-white"
             >
               How it works
@@ -559,15 +542,13 @@ export default function Home() {
         onChange={updateProduct}
       />
 
-      {spec && !booting && <ChatPanel spec={spec} />}
+      {spec && <ChatPanel spec={spec} />}
 
       <AuditDrawer
         run={audit}
         open={auditOpen}
         onClose={() => setAuditOpen(false)}
       />
-
-      {booting && <BootSequence onArrive={bootArrive} onDone={bootDone} />}
 
       {toast && (
         <div
