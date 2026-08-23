@@ -5,12 +5,24 @@
 // error that pdfjs-dist v3/v4 throws inside Node API routes.
 
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
+import { extractText, getDocumentProxy } from "unpdf";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_TEXT = 16000; // mirrors the pipeline's ingest cap
+
+// modern pdf.js (via unpdf) — reconstructs damaged/missing XRef tables that
+// the legacy pdf-parse build throws on ("bad XRef entry" etc.)
+async function parseWithUnpdf(buffer: Buffer) {
+  const pdf = await getDocumentProxy(new Uint8Array(buffer));
+  const { totalPages, text } = await extractText(pdf, { mergePages: true });
+  return {
+    pages: totalPages,
+    text: text.replace(/\0/g, "").replace(/[ \t]{2,}/g, " ").trim(),
+  };
+}
 
 export async function POST(req: Request) {
   let form: FormData;
@@ -40,11 +52,22 @@ export async function POST(req: Request) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const parsed = await pdfParse(buffer);
-    const text = parsed.text
-      .replace(/\0/g, "")
-      .replace(/[ \t]{2,}/g, " ")
-      .trim();
+
+    let text = "";
+    let pages = 0;
+    let primaryError: unknown = null;
+    try {
+      const parsed = await pdfParse(buffer);
+      text = parsed.text;
+      pages = parsed.numpages;
+    } catch (err) {
+      primaryError = err;
+      const alt = await parseWithUnpdf(buffer);
+      text = alt.text;
+      pages = alt.pages;
+    }
+
+    text = text.replace(/\0/g, "").replace(/[ \t]{2,}/g, " ").trim();
 
     if (text.length < 30) {
       return Response.json(
@@ -59,15 +82,20 @@ export async function POST(req: Request) {
     const truncated = text.length > MAX_TEXT;
     return Response.json({
       text: truncated ? text.slice(0, MAX_TEXT) : text,
-      pages: parsed.numpages,
+      pages,
       chars: text.length,
       truncated,
       name,
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    const message =
+      err instanceof Error ? err.message : String(err);
+    const detail =
+      primaryError instanceof Error && /xref/i.test(primaryError.message)
+        ? " (damaged PDF structure — recovered where possible)"
+        : "";
     return Response.json(
-      { error: `PDF parsing failed: ${message}` },
+      { error: `PDF parsing failed: ${message}${detail}` },
       { status: 500 }
     );
   }
