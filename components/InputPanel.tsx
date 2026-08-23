@@ -94,49 +94,87 @@ export default function InputPanel({
 
   const handleFiles = async (files: FileList | File[] | null) => {
     if (!files || files.length === 0) return;
-    const file = files[0];
+    const list = Array.from(files);
     setUploadError(null);
 
-    if (/\.(txt|md)$/i.test(file.name) || file.type.startsWith("text/")) {
-      const content = await file.text();
-      applyExtracted(
-        content.trim(),
-        `📄 ${file.name} · ${content.length.toLocaleString()} chars loaded`,
-        file.name.replace(/\.(txt|md)$/i, "")
-      );
-      return;
-    }
+    const pdfs = list.filter(
+      (f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf"
+    );
+    const txts = list.filter(
+      (f) => /\.(txt|md)$/i.test(f.name) || f.type.startsWith("text/")
+    );
+    const skipped = list.length - pdfs.length - txts.length;
 
-    if (!/\.pdf$/i.test(file.name) && file.type !== "application/pdf") {
-      setUploadError("Unsupported file — attach a PDF, TXT or MD file.");
+    if (pdfs.length === 0 && txts.length === 0) {
+      setUploadError("Unsupported file — attach PDF, TXT or MD files.");
       return;
     }
 
     setUploading(true);
+    const sections: string[] = [];
+    const docNames: string[] = [];
+    const failed: string[] = [];
+    let pages = 0;
     try {
-      const body = new FormData();
-      body.append("file", file);
-      const res = await fetch("/api/ingest-pdf", { method: "POST", body });
-      const data = (await res.json()) as {
-        text?: string;
-        pages?: number;
-        chars?: number;
-        truncated?: boolean;
-        name?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.text) {
-        throw new Error(data.error ?? `Extraction failed (${res.status}).`);
+      for (const f of txts) {
+        const content = await f.text();
+        sections.push(`──── ${f.name} ────\n${content.trim()}`);
+        docNames.push(f.name);
       }
+
+      for (let i = 0; i < pdfs.length; i++) {
+        const f = pdfs[i];
+        setUploadNote(
+          pdfs.length > 1 ? `⏳ extracting PDF ${i + 1}/${pdfs.length} — ${f.name}` : null
+        );
+        try {
+          const body = new FormData();
+          body.append("file", f);
+          const res = await fetch("/api/ingest-pdf", { method: "POST", body });
+          const data = (await res.json()) as {
+            text?: string;
+            pages?: number;
+            chars?: number;
+            truncated?: boolean;
+            name?: string;
+            error?: string;
+          };
+          if (!res.ok || !data.text) {
+            throw new Error(data.error ?? `Extraction failed (${res.status}).`);
+          }
+          pages += data.pages ?? 0;
+          sections.push(`──── ${data.name ?? f.name} ────\n${data.text}`);
+          docNames.push(data.name ?? f.name);
+        } catch (err) {
+          failed.push(
+            `${f.name} (${err instanceof Error ? err.message : "read failed"})`
+          );
+        }
+      }
+
+      if (sections.length === 0) {
+        setUploadError(failed[0] ?? "Nothing could be extracted from those files.");
+        return;
+      }
+
+      const combined = sections.join("\n\n");
+      const bits = [
+        `📄 ${docNames.length} document${docNames.length === 1 ? "" : "s"} loaded`,
+        pages > 0 ? `${pages} pages` : null,
+        `${combined.length.toLocaleString()} chars`,
+        failed.length > 0 ? `${failed.length} file${failed.length === 1 ? "" : "s"} failed` : null,
+        skipped > 0 ? `${skipped} unsupported file${skipped === 1 ? "" : "s"} skipped` : null,
+      ].filter(Boolean);
       applyExtracted(
-        data.text,
-        `📄 ${data.name ?? file.name} · ${data.pages ?? "?"} pages · ${(
-          data.chars ?? data.text.length
-        ).toLocaleString()} chars extracted`,
-        (data.name ?? file.name).replace(/\.pdf$/i, "")
+        combined,
+        bits.join(" · "),
+        docNames.length === 1
+          ? docNames[0].replace(/\.(pdf|txt|md)$/i, "")
+          : undefined
       );
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "PDF upload failed.");
+      if (failed.length > 0) {
+        setUploadError(`Could not read: ${failed.join(" · ")}`);
+      }
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -226,7 +264,7 @@ export default function InputPanel({
           }}
           disabled={busy}
           placeholder={
-            "Paste anything raw here…\n\n• a product spec sheet\n• a datasheet extract\n• catalog rows from a PDF\n• or drop a PDF anywhere on this box\n\nThe forge will organize every product and attribute."
+            "Paste anything raw here…\n\n• a product spec sheet\n• a datasheet extract\n• catalog rows from a PDF\n• or drop one or many PDFs on this box\n\nThe forge will organize every product and attribute."
           }
           className={`scrollbar-thin h-64 w-full resize-y rounded-lg border bg-black/30 p-3 text-[13px] leading-relaxed text-fog placeholder-fog-faint outline-none transition focus:border-white focus:ring-1 focus:ring-white/40 disabled:opacity-60 ${
             dragOver
@@ -236,7 +274,7 @@ export default function InputPanel({
         />
         {dragOver && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-white/10 text-sm font-semibold text-white">
-            ⬇ Drop PDF / TXT to ingest
+            ⬇ Drop PDFs / TXT files to ingest
           </div>
         )}
       </div>
@@ -256,6 +294,7 @@ export default function InputPanel({
           <input
             ref={fileInputRef}
             type="file"
+            multiple
             accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown"
             className="hidden"
             onChange={(e) => void handleFiles(e.target.files)}
